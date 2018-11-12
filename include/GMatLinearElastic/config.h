@@ -7,7 +7,7 @@
 #ifndef GMATLINEARELASTIC_H
 #define GMATLINEARELASTIC_H
 
-// --------------------------------------- include libraries ---------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 // use "M_PI" from "math.h"
 #define _USE_MATH_DEFINES
@@ -28,12 +28,12 @@
 #include <xtensor/xsort.hpp>
 #include <xtensor/xmath.hpp>
 
-// ---------------------------------------- dummy operation ----------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 // dummy operation that can be use to suppress the "unused parameter" warnings
 #define UNUSED(p) ( (void)(p) )
 
-// -------------------------------------- version information --------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 #define GMATLINEARELASTIC_WORLD_VERSION 0
 #define GMATLINEARELASTIC_MAJOR_VERSION 1
@@ -48,11 +48,6 @@
   (GMATLINEARELASTIC_WORLD_VERSION==x && \
    GMATLINEARELASTIC_MAJOR_VERSION==y && \
    GMATLINEARELASTIC_MINOR_VERSION==z)
-
-// ---------------------------------------- include headers ----------------------------------------
-
-#include "Cartesian3d.h"
-#include "Cartesian3d.hpp"
 
 // -------------------------------------------------------------------------------------------------
 
