@@ -9,7 +9,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-#include "GMatLinearElastic.h"
+#include "Cartesian3d.h"
 
 // =================================================================================================
 
@@ -113,7 +113,7 @@ inline T4 I4d()
 
 // -------------------------------------------------------------------------------------------------
 
-inline Material::Material(size_t nelem, size_t nip) : m_nelem(nelem), m_nip(nip)
+inline Matrix::Matrix(size_t nelem, size_t nip) : m_nelem(nelem), m_nip(nip)
 {
   m_set   = xt::zeros<int   >({nelem, nip});
   m_kappa = xt::empty<double>({nelem, nip});
@@ -122,7 +122,7 @@ inline Material::Material(size_t nelem, size_t nip) : m_nelem(nelem), m_nip(nip)
 
 // -------------------------------------------------------------------------------------------------
 
-inline Material::Material(size_t nelem, size_t nip, double kappa, double mu) :
+inline Matrix::Matrix(size_t nelem, size_t nip, double kappa, double mu) :
   m_nelem(nelem), m_nip(nip)
 {
   m_set   = xt::ones<int   >({nelem, nip});
@@ -132,35 +132,35 @@ inline Material::Material(size_t nelem, size_t nip, double kappa, double mu) :
 
 // -------------------------------------------------------------------------------------------------
 
-inline size_t Material::nelem() const
+inline size_t Matrix::nelem() const
 {
   return m_nelem;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline size_t Material::nip() const
+inline size_t Matrix::nip() const
 {
   return m_nip;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline xt::xtensor<double,2> Material::kappa() const
+inline xt::xtensor<double,2> Matrix::kappa() const
 {
   return m_kappa;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline xt::xtensor<double,2> Material::mu() const
+inline xt::xtensor<double,2> Matrix::mu() const
 {
   return m_mu;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline void Material::check() const
+inline void Matrix::check() const
 {
   for ( size_t e = 0 ; e < m_nelem ; ++e )
     for ( size_t q = 0 ; q < m_nip ; ++q )
@@ -170,7 +170,7 @@ inline void Material::check() const
 
 // -------------------------------------------------------------------------------------------------
 
-inline void Material::set(const xt::xtensor<size_t,2> &I, double kappa, double mu)
+inline void Matrix::set(const xt::xtensor<size_t,2> &I, double kappa, double mu)
 {
   // check input
   #ifndef NDEBUG
@@ -197,7 +197,7 @@ inline void Material::set(const xt::xtensor<size_t,2> &I, double kappa, double m
 
 // -------------------------------------------------------------------------------------------------
 
-inline void Material::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Sig) const
+inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Sig) const
 {
   // check input
   assert( a_Eps.shape()[0] == m_nelem       );
@@ -235,7 +235,7 @@ inline void Material::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double
 
 // -------------------------------------------------------------------------------------------------
 
-inline void Material::Tangent(xt::xtensor<double,6> &a_Tangent) const
+inline void Matrix::Tangent(xt::xtensor<double,6> &a_Tangent) const
 {
   // check input
   assert( a_Tangent.shape()[0] == m_nelem );
@@ -271,7 +271,7 @@ inline void Material::Tangent(xt::xtensor<double,6> &a_Tangent) const
 
 // -------------------------------------------------------------------------------------------------
 
-inline xt::xtensor<double,4> Material::Sig(const xt::xtensor<double,4> &a_Eps) const
+inline xt::xtensor<double,4> Matrix::Sig(const xt::xtensor<double,4> &a_Eps) const
 {
   xt::xtensor<double,4> a_Sig = xt::empty<double>(a_Eps.shape());
 
@@ -282,7 +282,7 @@ inline xt::xtensor<double,4> Material::Sig(const xt::xtensor<double,4> &a_Eps) c
 
 // -------------------------------------------------------------------------------------------------
 
-inline xt::xtensor<double,6> Material::Tangent() const
+inline xt::xtensor<double,6> Matrix::Tangent() const
 {
   xt::xtensor<double,6> a_Tangent = xt::empty<double>({m_nelem,m_nip,m_ndim,m_ndim,m_ndim,m_ndim});
 

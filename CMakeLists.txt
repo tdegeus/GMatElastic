@@ -13,11 +13,11 @@ include(GNUInstallDirs)
 project(GMatLinearElastic)
 
 # file that contains the version information
-set(parse_version include/GMatLinearElastic/GMatLinearElastic.h)
+set(parse_version include/GMatLinearElastic/config.h)
 
 # header files
 set(headers
-  include/GMatLinearElastic/GMatLinearElastic.h
+  include/GMatLinearElastic/config.h
   include/GMatLinearElastic/Cartesian3d.h
   include/GMatLinearElastic/Cartesian3d.hpp
 )
