@@ -20,7 +20,7 @@ PYBIND11_MODULE(GMatLinearElastic, m) {
 
 m.doc() = "Linear elastic material model";
 
-// ================================ GMatLinearElastic::Cartesian3d =================================
+// ================================ GMatLinearElastic.Cartesian3d ==================================
 
 {
 
@@ -44,7 +44,7 @@ sm.def("I4d" , &SM::I4d );
 py::class_<SM::Elastic>(sm, "Elastic")
   // constructor
   .def(
-    py::init<double,double>(),
+    py::init<double, double>(),
     "Linear elastic material point",
     py::arg("kappa"),
     py::arg("mu")
@@ -56,7 +56,7 @@ py::class_<SM::Elastic>(sm, "Elastic")
   .def("Tangent", &SM::Elastic::Tangent)
   // print to screen
   .def("__repr__", [](const SM::Elastic &){
-    return "GMat<LinearElastic.Cartesian3d.Elastic>"; });
+    return "<GMatLinearElastic.Cartesian3d.Elastic>"; });
 
 // -------------------------------------------------------------------------------------------------
 
@@ -94,7 +94,7 @@ py::class_<SM::Matrix>(sm, "Matrix")
   .def("Tangent", py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::Tangent, py::const_), py::arg("Eps"))
   // print to screen
   .def("__repr__", [](const SM::Matrix &){
-    return "GMat<LinearElastic.Cartesian3d.Matrix>"; });
+    return "<GMatLinearElastic.Cartesian3d.Matrix>"; });
 
 // -------------------------------------------------------------------------------------------------
 
