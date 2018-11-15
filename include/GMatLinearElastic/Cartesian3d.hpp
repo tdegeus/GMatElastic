@@ -1,6 +1,6 @@
 /* =================================================================================================
 
-(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/ElastoPlasticQPot
+(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/GMatLinearElastic
 
 ================================================================================================= */
 
@@ -113,6 +113,36 @@ inline T4 I4d()
 
 // -------------------------------------------------------------------------------------------------
 
+inline T2 Elastic::Sig(const T2 &Eps) const
+{
+  T2 I = Cartesian3d::I();
+
+  auto treps = trace(Eps);
+  auto Epsd  = Eps - treps/3. * I;
+
+  return m_kappa * treps * I + 2. * m_mu * Epsd;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline std::tuple<T2,T4> Elastic::Tangent(const T2 &Eps) const
+{
+  T2 I   = Cartesian3d::I();
+  T4 II  = Cartesian3d::II();
+  T4 I4d = Cartesian3d::I4d();
+
+  auto treps = trace(Eps);
+  auto Epsd  = Eps - treps/3. * I;
+
+  auto Sig = m_kappa * treps * I + 2. * m_mu * Epsd;
+
+  auto C4 = m_kappa * II + 2. * m_mu * I4d;
+
+  return std::make_tuple(Sig, C4);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 inline Matrix::Matrix(size_t nelem, size_t nip) : m_nelem(nelem), m_nip(nip)
 {
   m_set   = xt::zeros<int   >({nelem, nip});
@@ -128,34 +158,6 @@ inline Matrix::Matrix(size_t nelem, size_t nip, double kappa, double mu) :
   m_set   = xt::ones<int   >({nelem, nip});
   m_kappa = xt::ones<double>({nelem, nip}) * kappa;
   m_mu    = xt::ones<double>({nelem, nip}) * mu;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-inline size_t Matrix::nelem() const
-{
-  return m_nelem;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-inline size_t Matrix::nip() const
-{
-  return m_nip;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-inline xt::xtensor<double,2> Matrix::kappa() const
-{
-  return m_kappa;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-inline xt::xtensor<double,2> Matrix::mu() const
-{
-  return m_mu;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -197,37 +199,181 @@ inline void Matrix::set(const xt::xtensor<size_t,2> &I, double kappa, double mu)
 
 // -------------------------------------------------------------------------------------------------
 
+inline xt::xtensor<double,4> Matrix::I() const
+{
+  xt::xtensor<double,4> out = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim});
+
+  #pragma omp parallel
+  {
+    T2 unit = Cartesian3d::I();
+
+    #pragma omp for
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    {
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+      {
+        auto view = xt::adapt(&out(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+
+        xt::noalias(view) = unit;
+      }
+    }
+  }
+
+  return out;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline xt::xtensor<double,6> Matrix::II() const
+{
+  xt::xtensor<double,6> out = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+
+  #pragma omp parallel
+  {
+    T4 unit = Cartesian3d::II();
+
+    #pragma omp for
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    {
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+      {
+        auto view = xt::adapt(&out(e,q,0,0,0,0), xt::xshape<m_ndim,m_ndim,m_ndim,m_ndim>());
+
+        xt::noalias(view) = unit;
+      }
+    }
+  }
+
+  return out;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline xt::xtensor<double,6> Matrix::I4() const
+{
+  xt::xtensor<double,6> out = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+
+  #pragma omp parallel
+  {
+    T4 unit = Cartesian3d::I4();
+
+    #pragma omp for
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    {
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+      {
+        auto view = xt::adapt(&out(e,q,0,0,0,0), xt::xshape<m_ndim,m_ndim,m_ndim,m_ndim>());
+
+        xt::noalias(view) = unit;
+      }
+    }
+  }
+
+  return out;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline xt::xtensor<double,6> Matrix::I4rt() const
+{
+  xt::xtensor<double,6> out = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+
+  #pragma omp parallel
+  {
+    T4 unit = Cartesian3d::I4rt();
+
+    #pragma omp for
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    {
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+      {
+        auto view = xt::adapt(&out(e,q,0,0,0,0), xt::xshape<m_ndim,m_ndim,m_ndim,m_ndim>());
+
+        xt::noalias(view) = unit;
+      }
+    }
+  }
+
+  return out;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline xt::xtensor<double,6> Matrix::I4s() const
+{
+  xt::xtensor<double,6> out = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+
+  #pragma omp parallel
+  {
+    T4 unit = Cartesian3d::I4s();
+
+    #pragma omp for
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    {
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+      {
+        auto view = xt::adapt(&out(e,q,0,0,0,0), xt::xshape<m_ndim,m_ndim,m_ndim,m_ndim>());
+
+        xt::noalias(view) = unit;
+      }
+    }
+  }
+
+  return out;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline xt::xtensor<double,6> Matrix::I4d() const
+{
+  xt::xtensor<double,6> out = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+
+  #pragma omp parallel
+  {
+    T4 unit = Cartesian3d::I4d();
+
+    #pragma omp for
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    {
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+      {
+        auto view = xt::adapt(&out(e,q,0,0,0,0), xt::xshape<m_ndim,m_ndim,m_ndim,m_ndim>());
+
+        xt::noalias(view) = unit;
+      }
+    }
+  }
+
+  return out;
+}
+
+// -------------------------------------------------------------------------------------------------
+
 inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Sig) const
 {
-  // check input
   assert( a_Eps.shape()[0] == m_nelem       );
   assert( a_Eps.shape()[1] == m_nip         );
   assert( a_Eps.shape()[2] == m_ndim        );
   assert( a_Eps.shape()[3] == m_ndim        );
   assert( a_Eps.shape()    == a_Sig.shape() );
 
-  // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // identity tensor
     T2 I = Cartesian3d::I();
 
-    // loop over all points
     #pragma omp for
     for ( size_t e = 0 ; e < m_nelem ; ++e )
     {
       for ( size_t q = 0 ; q < m_nip ; ++q )
       {
-        // - alias
         auto  Eps   = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
-        auto  Sig   = xt::view(a_Sig,e,q);
+        auto  Sig   = xt::adapt(&a_Sig(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
         auto& kappa = m_kappa(e,q);
         auto& mu    = m_mu   (e,q);
-        // - compute strain components
         auto  treps = trace(Eps);
         auto  Epsd  = Eps - treps/3. * I;
-        // - compute stress tensor
-        Sig = kappa * treps * I + 2. * mu * Epsd;
+
+        xt::noalias(Sig) = kappa * treps * I + 2. * mu * Epsd;
       }
     }
   }
@@ -235,35 +381,44 @@ inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4
 
 // -------------------------------------------------------------------------------------------------
 
-inline void Matrix::Tangent(xt::xtensor<double,6> &a_Tangent) const
+inline void Matrix::Tangent(const xt::xtensor<double,4> &a_Eps,
+  xt::xtensor<double,4> &a_Sig, xt::xtensor<double,6> &a_Tangent) const
 {
-  // check input
-  assert( a_Tangent.shape()[0] == m_nelem );
-  assert( a_Tangent.shape()[1] == m_nip   );
-  assert( a_Tangent.shape()[2] == m_ndim  );
-  assert( a_Tangent.shape()[3] == m_ndim  );
-  assert( a_Tangent.shape()[4] == m_ndim  );
-  assert( a_Tangent.shape()[5] == m_ndim  );
+  assert( a_Eps.shape()[0]     == m_nelem       );
+  assert( a_Eps.shape()[1]     == m_nip         );
+  assert( a_Eps.shape()[2]     == m_ndim        );
+  assert( a_Eps.shape()[3]     == m_ndim        );
+  assert( a_Eps.shape()        == a_Sig.shape() );
+  assert( a_Tangent.shape()[0] == m_nelem       );
+  assert( a_Tangent.shape()[1] == m_nip         );
+  assert( a_Tangent.shape()[2] == m_ndim        );
+  assert( a_Tangent.shape()[3] == m_ndim        );
+  assert( a_Tangent.shape()[4] == m_ndim        );
+  assert( a_Tangent.shape()[5] == m_ndim        );
 
-  // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // identity tensor
+    T2 I   = Cartesian3d::I();
     T4 II  = Cartesian3d::II();
     T4 I4d = Cartesian3d::I4d();
 
-    // loop over all points
     #pragma omp for
     for ( size_t e = 0 ; e < m_nelem ; ++e )
     {
       for ( size_t q = 0 ; q < m_nip ; ++q )
       {
-        // - alias
-        auto  C4    = xt::view(a_Tangent,e,q);
+
+        auto  Eps   = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+        auto  Sig   = xt::adapt(&a_Sig(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+        auto  C4    = xt::adapt(&a_Tangent(e,q,0,0,0,0), xt::xshape<m_ndim,m_ndim,m_ndim,m_ndim>());
         auto& kappa = m_kappa(e,q);
         auto& mu    = m_mu   (e,q);
-        // - compute
-        C4 = kappa * II + 2. * mu * I4d;
+        auto  treps = trace(Eps);
+        auto  Epsd  = Eps - treps/3. * I;
+
+        xt::noalias(Sig) = kappa * treps * I + 2. * mu * Epsd;
+
+        xt::noalias(C4) = kappa * II + 2. * mu * I4d;
       }
     }
   }
@@ -282,13 +437,15 @@ inline xt::xtensor<double,4> Matrix::Sig(const xt::xtensor<double,4> &a_Eps) con
 
 // -------------------------------------------------------------------------------------------------
 
-inline xt::xtensor<double,6> Matrix::Tangent() const
+inline std::tuple<xt::xtensor<double,4>,xt::xtensor<double,6>> Matrix::Tangent(
+  const xt::xtensor<double,4> &a_Eps) const
 {
+  xt::xtensor<double,4> a_Sig     = xt::empty<double>({m_nelem,m_nip,m_ndim,m_ndim});
   xt::xtensor<double,6> a_Tangent = xt::empty<double>({m_nelem,m_nip,m_ndim,m_ndim,m_ndim,m_ndim});
 
-  this->Tangent(a_Tangent);
+  this->Tangent(a_Eps, a_Sig, a_Tangent);
 
-  return a_Tangent;
+  return std::make_tuple(a_Sig, a_Tangent);
 }
 
 // =================================================================================================

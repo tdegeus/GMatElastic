@@ -18,8 +18,10 @@
 #include <math.h>
 #include <iostream>
 #include <vector>
+#include <tuple>
 #include <xtensor/xarray.hpp>
 #include <xtensor/xtensor.hpp>
+#include <xtensor/xnoalias.hpp>
 #include <xtensor/xfixed.hpp>
 #include <xtensor/xadapt.hpp>
 #include <xtensor/xview.hpp>
