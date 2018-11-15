@@ -115,11 +115,14 @@ inline T4 I4d()
 
 inline T2 Elastic::Sig(const T2 &Eps) const
 {
+  // define identity tensor
   T2 I = Cartesian3d::I();
 
+  // decompose strain
   auto treps = trace(Eps);
   auto Epsd  = Eps - treps/3. * I;
 
+  // compute stress
   return m_kappa * treps * I + 2. * m_mu * Epsd;
 }
 
@@ -127,15 +130,19 @@ inline T2 Elastic::Sig(const T2 &Eps) const
 
 inline std::tuple<T2,T4> Elastic::Tangent(const T2 &Eps) const
 {
+  // define identity tensor
   T2 I   = Cartesian3d::I();
   T4 II  = Cartesian3d::II();
   T4 I4d = Cartesian3d::I4d();
 
+  // decompose strain
   auto treps = trace(Eps);
   auto Epsd  = Eps - treps/3. * I;
 
+  // compute stress
   auto Sig = m_kappa * treps * I + 2. * m_mu * Epsd;
 
+  // compute tangent
   auto C4 = m_kappa * II + 2. * m_mu * I4d;
 
   return std::make_tuple(Sig, C4);
@@ -357,22 +364,29 @@ inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4
   assert( a_Eps.shape()[3] == m_ndim        );
   assert( a_Eps.shape()    == a_Sig.shape() );
 
+  // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
+    // identity tensor
     T2 I = Cartesian3d::I();
 
+    // loop over all points
     #pragma omp for
     for ( size_t e = 0 ; e < m_nelem ; ++e )
     {
       for ( size_t q = 0 ; q < m_nip ; ++q )
       {
+        // alias
         auto  Eps   = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
         auto  Sig   = xt::adapt(&a_Sig(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
         auto& kappa = m_kappa(e,q);
         auto& mu    = m_mu   (e,q);
+
+        // decompose strain
         auto  treps = trace(Eps);
         auto  Epsd  = Eps - treps/3. * I;
 
+        // compute stress
         xt::noalias(Sig) = kappa * treps * I + 2. * mu * Epsd;
       }
     }
@@ -396,28 +410,35 @@ inline void Matrix::Tangent(const xt::xtensor<double,4> &a_Eps,
   assert( a_Tangent.shape()[4] == m_ndim        );
   assert( a_Tangent.shape()[5] == m_ndim        );
 
+  // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
+    // identity tensors
     T2 I   = Cartesian3d::I();
     T4 II  = Cartesian3d::II();
     T4 I4d = Cartesian3d::I4d();
 
+    // loop over all points
     #pragma omp for
     for ( size_t e = 0 ; e < m_nelem ; ++e )
     {
       for ( size_t q = 0 ; q < m_nip ; ++q )
       {
-
+        // alias
         auto  Eps   = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
         auto  Sig   = xt::adapt(&a_Sig(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
         auto  C4    = xt::adapt(&a_Tangent(e,q,0,0,0,0), xt::xshape<m_ndim,m_ndim,m_ndim,m_ndim>());
         auto& kappa = m_kappa(e,q);
         auto& mu    = m_mu   (e,q);
+
+        // decompose strain
         auto  treps = trace(Eps);
         auto  Epsd  = Eps - treps/3. * I;
 
+        // compute stress
         xt::noalias(Sig) = kappa * treps * I + 2. * mu * Epsd;
 
+        // compute tangent
         xt::noalias(C4) = kappa * II + 2. * mu * I4d;
       }
     }
