@@ -113,6 +113,14 @@ inline T4 I4d()
 
 // -------------------------------------------------------------------------------------------------
 
+inline Elastic::Elastic(double kappa, double mu) : m_kappa(kappa), m_mu(mu) { }
+
+inline double Elastic::kappa() const { return m_kappa; }
+
+inline double Elastic::mu() const { return m_mu; }
+
+// -------------------------------------------------------------------------------------------------
+
 inline T2 Elastic::Sig(const T2 &Eps) const
 {
   // define identity tensor
@@ -147,6 +155,16 @@ inline std::tuple<T2,T4> Elastic::Tangent(const T2 &Eps) const
 
   return std::make_tuple(Sig, C4);
 }
+
+// -------------------------------------------------------------------------------------------------
+
+inline size_t Matrix::nelem() const { return m_nelem; }
+
+inline size_t Matrix::nip() const { return m_nip; }
+
+inline xt::xtensor<double,2> Matrix::kappa() const { return m_kappa; };
+
+inline xt::xtensor<double,2> Matrix::mu() const { return m_mu; };
 
 // -------------------------------------------------------------------------------------------------
 

@@ -39,11 +39,11 @@ public:
 
   // constructors
   Elastic() = default;
-  Elastic(double kappa, double mu) : m_kappa(kappa), m_mu(mu) {};
+  Elastic(double kappa, double mu);
 
   // return parameters
-  double kappa() const { return m_kappa; };
-  double mu()    const { return m_mu;    };
+  double kappa() const;
+  double mu() const;
 
   // compute stress
   T2 Sig(const T2 &Eps) const;
@@ -69,12 +69,12 @@ public:
   Matrix(size_t nelem, size_t nip, double kappa, double mu);
 
   // return shape
-  size_t nelem() const { return m_nelem; };
-  size_t nip()   const { return m_nip;   };
+  size_t nelem() const;
+  size_t nip() const;
 
   // parameters
-  xt::xtensor<double,2> kappa() const { return m_kappa; };
-  xt::xtensor<double,2> mu()    const { return m_mu;    };
+  xt::xtensor<double,2> kappa() const;
+  xt::xtensor<double,2> mu() const;
 
   // check that a type has been set everywhere
   void check() const;
