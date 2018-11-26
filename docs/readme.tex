@@ -25,7 +25,7 @@
 
 \section{Consistency check}
 
-To check if the derived tangent $\mathbb{C}$ a \emph{consistency check} can be performed. A (random) perturbation $\delta \bm{\varepsilon}$ is applied. The residual is compared to that predicted by the tangent. For the linearisation, the following holds:
+To check if the derived tangent $\mathbb{C}$ a \emph{consistency check} can be performed. A (random) perturbation $\delta \bm{\varepsilon}$ is applied. The residual is compared to that predicted by the tangent. For the general case of linearisation, the following holds:
 %
 \begin{equation}
   \bm{\sigma}\big( \bm{\varepsilon}_\star + \delta \bm{\varepsilon} \big) =
@@ -47,7 +47,7 @@ or
   \mathcal{O}(\delta \bm{\varepsilon}^2)
 \end{equation}
 %
-This allows us the introduction of a relative error
+This allows the introduction of a relative error
 %
 \begin{equation}
   \eta =
@@ -59,13 +59,22 @@ This allows us the introduction of a relative error
   \Big|\Big| \delta \bm{\sigma} \Big|\Big|
 \end{equation}
 %
-Because of the first order accuracy of the linearization, the error should scale linearly with the amplitude of the strain perturbation. This can be shown in a graph such as Figure~\ref{fig:newton:consistency}. The expected behavior is found in the right hand side of the graph, denoted as \textit{truncation error}. Also visible in this graph is that once the amplitude of the strain perturbation becomes sufficiently small, $10^{-8}$ to be exact, numerical errors become dominant, causing the error $\eta$ to increase again.
+This \emph{truncation error} thus scales as $\eta \sim || \delta \bm{\varepsilon} ||^2$ as depicted in Figure~\ref{fig:consistency:expected}. As soon as the error becomes sufficiently small the numerical \emph{rounding error} becomes more dominant, the scaling thereof is also included in Figure~\ref{fig:consistency:expected}.
 
 \begin{figure}[htp]
   \centering
   \includegraphics[width=.5\textwidth]{figures/consistency}
   \caption{Expected behaviour of the consistency check, see \citet[p.~9]{Heath2002}.}
-  \label{fig:newton:consistency}
+  \label{fig:consistency:expected}
+\end{figure}
+
+Because this model is linear there is no truncation error, the measurement of $\eta$ and a function of $|| \delta \bm{\varepsilon} ||$ thus only displays a rounding error, as depicted in Fig.~\ref{fig:consistency}
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=.5\textwidth]{examples/consistency}
+  \caption{Measured consistency check, cf.\ Fig.~\ref{fig:consistency:expected}.}
+  \label{fig:consistency}
 \end{figure}
 
 \bibliography{library}
