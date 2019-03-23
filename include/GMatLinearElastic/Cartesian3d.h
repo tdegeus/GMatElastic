@@ -1,6 +1,6 @@
 /* =================================================================================================
 
-(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/GMatLinearElastic
+(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatLinearElastic
 
 ================================================================================================= */
 
@@ -18,11 +18,17 @@ namespace Cartesian3d {
 
 // -------------------------------------------------------------------------------------------------
 
+// aliases
+
 using T2 = xt::xtensor_fixed<double, xt::xshape<3,3>>;
 using T4 = xt::xtensor_fixed<double, xt::xshape<3,3,3,3>>;
 
-template<class T> double trace (const T &A);
-template<class T> double ddot22(const T &A, const T &B);
+// Tensor operations
+
+template <class T> double trace (const T& A);
+template <class T> double ddot22(const T& A, const T& B);
+
+// Unit tensors
 
 T2 I();
 T4 II();
@@ -33,28 +39,66 @@ T4 I4d();
 
 // -------------------------------------------------------------------------------------------------
 
+// Hydrostatic stress/strain
+
+double hydrostatic(const T2& A);
+
+// Equivalent deviatoric stress/stress
+
+double sigeq(const T2& Sig);
+double epseq(const T2& Eps);
+
+// Deviator
+
+void deviator(const T2& A, T2& Ad);
+T2   Deviator(const T2& A);
+
+// Matrix version of the functions above (no allocation)
+
+void hydrostatic(const xt::xtensor<double,4>& A, xt::xtensor<double,2>& Am);
+
+void sigeq(const xt::xtensor<double,4>& Sig, xt::xtensor<double,2>& sigd);
+void epseq(const xt::xtensor<double,4>& Eps, xt::xtensor<double,2>& epsd);
+
+void deviator(const xt::xtensor<double,4>& A, xt::xtensor<double,4>& Ad);
+
+// Auto-allocation allocation of the functions above
+
+xt::xtensor<double,2> Hydrostatic(const xt::xtensor<double,4>& A);
+
+xt::xtensor<double,2> Sigeq(const xt::xtensor<double,4>& Sig);
+xt::xtensor<double,2> Epseq(const xt::xtensor<double,4>& Eps);
+
+xt::xtensor<double,4> Deviator(const xt::xtensor<double,4>& Sig);
+
+// -------------------------------------------------------------------------------------------------
+
 class Elastic
 {
 public:
 
-  // constructors
+  // Constructors
   Elastic() = default;
-  Elastic(double kappa, double mu);
+  Elastic(double K, double G);
 
-  // return parameters
-  double kappa() const;
-  double mu() const;
+  // Parameters
+  double K() const;
+  double G() const;
 
-  // compute stress
-  T2 Sig(const T2 &Eps) const;
+  // Stress
+  void stress(const T2& Eps, T2& Sig) const;
 
-  // compute tangent
-  std::tuple<T2,T4> Tangent(const T2 &Eps) const;
+  // Stress & tangent
+  void tangent(const T2& Eps, T2& Sig, T4& C) const;
+
+  // Auto-allocation of the functions above
+  T2 Stress(const T2& Eps) const;
+  std::tuple<T2,T4> Tangent(const T2& Eps) const;
 
 private:
 
-  double m_kappa;
-  double m_mu;
+  double m_K; // bulk modulus
+  double m_G; // shear modulus
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -63,26 +107,24 @@ class Matrix
 {
 public:
 
-  // constructors
+  // Constructors
+
   Matrix() = default;
   Matrix(size_t nelem, size_t nip);
-  Matrix(size_t nelem, size_t nip, double kappa, double mu);
+  Matrix(size_t nelem, size_t nip, double K, double G);
 
-  // return shape
+  // Shape
+
   size_t nelem() const;
   size_t nip() const;
 
-  // parameters
-  xt::xtensor<double,2> kappa() const;
-  xt::xtensor<double,2> mu() const;
+  // Parameters
 
-  // check that a type has been set everywhere
-  void check() const;
+  xt::xtensor<double,2> K() const;
+  xt::xtensor<double,2> G() const;
 
-  // set parameters
-  void set(const xt::xtensor<size_t,2> &I, double kappa, double mu);
+  // Matrix of unit tensors
 
-  // return unit matrix of unit tensors
   xt::xtensor<double,4> I() const;
   xt::xtensor<double,6> II() const;
   xt::xtensor<double,6> I4() const;
@@ -90,28 +132,44 @@ public:
   xt::xtensor<double,6> I4s() const;
   xt::xtensor<double,6> I4d() const;
 
-  // compute stress (no allocation)
-  void Sig(const xt::xtensor<double,4> &Eps,
-    xt::xtensor<double,4> &Sig) const;
+  // Check that a type has been set everywhere (throws if unset points are found)
 
-  // compute stress & tangent (no allocation)
-  void Tangent(const xt::xtensor<double,4> &Eps,
-    xt::xtensor<double,4> &Sig, xt::xtensor<double,6> &Tangent) const;
+  void check() const;
 
-  // compute stress (return allocated result)
-  xt::xtensor<double,4> Sig(const xt::xtensor<double,4> &Eps) const;
+  // Set parameters for a batch of points
 
-  // compute stress & tangent (return allocated result)
-  std::tuple<xt::xtensor<double,4>,xt::xtensor<double,6>> Tangent(const xt::xtensor<double,4> &Eps) const;
+  void set(const xt::xtensor<size_t,2>& I, double K, double G);
+
+  // Compute (no allocation)
+
+  void stress(
+    const xt::xtensor<double,4>& Eps,
+          xt::xtensor<double,4>& Sig) const;
+
+  void tangent(
+    const xt::xtensor<double,4>& Eps,
+          xt::xtensor<double,4>& Sig,
+          xt::xtensor<double,6>& C) const;
+
+  // Auto-allocation of the functions above
+
+  xt::xtensor<double,4> Stress(
+    const xt::xtensor<double,4>& Eps) const;
+
+  std::tuple<xt::xtensor<double,4>,xt::xtensor<double,6>> Tangent(
+    const xt::xtensor<double,4>& Eps) const;
 
 private:
 
+  // Parameters
   xt::xtensor<int   ,2> m_set;
-  xt::xtensor<double,2> m_kappa;
-  xt::xtensor<double,2> m_mu;
-  size_t                m_nelem;
-  size_t                m_nip;
-  static const size_t   m_ndim=3;
+  xt::xtensor<double,2> m_K;
+  xt::xtensor<double,2> m_G;
+
+  // Shape
+  size_t m_nelem;
+  size_t m_nip;
+  static const size_t m_ndim=3;
 };
 
 // -------------------------------------------------------------------------------------------------
