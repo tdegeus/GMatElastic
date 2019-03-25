@@ -37,9 +37,26 @@
 
 // -------------------------------------------------------------------------------------------------
 
+#ifndef NDEBUG
+#define GMATLINEARELASTIC_ENABLE_ASSERT
+#endif
+
+#ifdef GMATLINEARELASTIC_ENABLE_ASSERT
+#define GMATLINEARELASTIC_ASSERT(expr) GMATLINEARELASTIC_ASSERT_IMPL(expr, __FILE__, __LINE__)
+#define GMATLINEARELASTIC_ASSERT_IMPL(expr, file, line)                                                                   \
+    if (!(expr))                                                                                                          \
+    {                                                                                                                     \
+        throw std::runtime_error(std::string(file) + ':' + std::to_string(line) + ": assertion failed (" #expr ") \n\t"); \
+    }
+#else
+#define GMATLINEARELASTIC_ASSERT(expr)
+#endif
+
+// -------------------------------------------------------------------------------------------------
+
 #define GMATLINEARELASTIC_WORLD_VERSION 0
-#define GMATLINEARELASTIC_MAJOR_VERSION 1
-#define GMATLINEARELASTIC_MINOR_VERSION 2
+#define GMATLINEARELASTIC_MAJOR_VERSION 2
+#define GMATLINEARELASTIC_MINOR_VERSION 0
 
 #define GMATLINEARELASTIC_VERSION_AT_LEAST(x,y,z) \
   (GMATLINEARELASTIC_WORLD_VERSION>x || (GMATLINEARELASTIC_WORLD_VERSION>=x && \
