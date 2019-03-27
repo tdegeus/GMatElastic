@@ -7,22 +7,21 @@
 #include <pybind11/pybind11.h>
 #include <pyxtensor/pyxtensor.hpp>
 
-#include "Cartesian3d.h"
+// Enable basic assertions on matrix shape
+// (doesn't cost a lot of time, but avoids segmentation faults)
+#define GMATLINEARELASTIC_ENABLE_ASSERT
 
-// =================================================================================================
+// include library
+#include "../include/GMatLinearElastic/Cartesian3d.h"
 
 // abbreviate name-space
 namespace py = pybind11;
 
-// ======================================= GMatLinearElastic =======================================
+// -------------------------------------------------------------------------------------------------
 
 PYBIND11_MODULE(GMatLinearElastic, m) {
 
 m.doc() = "Linear elastic material model";
-
-// ================================ GMatLinearElastic.Cartesian3d ==================================
-
-{
 
 // create sub-module
 py::module sm = m.def_submodule("Cartesian3d", "3d Cartesian coordinates");
@@ -46,13 +45,13 @@ py::class_<SM::Elastic>(sm, "Elastic")
   .def(
     py::init<double, double>(),
     "Linear elastic material point",
-    py::arg("kappa"),
-    py::arg("mu")
+    py::arg("K"),
+    py::arg("G")
   )
   // methods
-  .def("kappa"  , &SM::Elastic::kappa)
-  .def("mu"     , &SM::Elastic::mu)
-  .def("Sig"    , &SM::Elastic::Sig)
+  .def("K"      , &SM::Elastic::K)
+  .def("G"      , &SM::Elastic::G)
+  .def("Stress" , &SM::Elastic::Stress)
   .def("Tangent", &SM::Elastic::Tangent)
   // print to screen
   .def("__repr__", [](const SM::Elastic &){
@@ -74,14 +73,14 @@ py::class_<SM::Matrix>(sm, "Matrix")
     "Matrix of linear elastic material points",
     py::arg("nelem"),
     py::arg("nip"),
-    py::arg("kappa"),
-    py::arg("mu")
+    py::arg("K"),
+    py::arg("G")
   )
   // methods
   .def("nelem"  , &SM::Matrix::nelem)
   .def("nip"    , &SM::Matrix::nip)
-  .def("kappa"  , &SM::Matrix::kappa)
-  .def("mu"     , &SM::Matrix::mu)
+  .def("K"      , &SM::Matrix::K)
+  .def("G"      , &SM::Matrix::G)
   .def("check"  , &SM::Matrix::check)
   .def("set"    , &SM::Matrix::set)
   .def("I"      , &SM::Matrix::I)
@@ -90,7 +89,7 @@ py::class_<SM::Matrix>(sm, "Matrix")
   .def("I4rt"   , &SM::Matrix::I4rt)
   .def("I4s"    , &SM::Matrix::I4s)
   .def("I4d"    , &SM::Matrix::I4d)
-  .def("Sig"    , py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::Sig    , py::const_), py::arg("Eps"))
+  .def("Stress" , py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::Stress , py::const_), py::arg("Eps"))
   .def("Tangent", py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::Tangent, py::const_), py::arg("Eps"))
   // print to screen
   .def("__repr__", [](const SM::Matrix &){
@@ -100,7 +99,4 @@ py::class_<SM::Matrix>(sm, "Matrix")
 
 }
 
-// =================================================================================================
-
-}
 
