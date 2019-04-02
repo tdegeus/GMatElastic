@@ -1,15 +1,15 @@
 /* =================================================================================================
 
-(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatLinearElastic
+(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastic
 
 ================================================================================================= */
 
-#ifndef GMATLINEARELASTIC_CARTESIAN3D_H
-#define GMATLINEARELASTIC_CARTESIAN3D_H
+#ifndef GMATELASTIC_CARTESIAN3D_H
+#define GMATELASTIC_CARTESIAN3D_H
 
 #include "config.h"
 
-namespace GMatLinearElastic {
+namespace GMatElastic {
 namespace Cartesian3d {
 
 // -------------------------------------------------------------------------------------------------
@@ -98,6 +98,15 @@ private:
 
 // -------------------------------------------------------------------------------------------------
 
+struct Type {
+  enum Value {
+    Unset,
+    Elastic,
+  };
+};
+
+// -------------------------------------------------------------------------------------------------
+
 class Matrix
 {
 public:
@@ -112,6 +121,10 @@ public:
 
   size_t nelem() const;
   size_t nip() const;
+
+  // Type
+
+  xt::xtensor<size_t,2> type() const;
 
   // Parameters
 
@@ -133,7 +146,10 @@ public:
 
   // Set parameters for a batch of points
 
-  void set(const xt::xtensor<size_t,2>& I, double K, double G);
+  void setElastic(
+    const xt::xtensor<size_t,2>& I,
+    double K,
+    double G);
 
   // Compute (no allocation, overwrites last argument)
 
@@ -156,10 +172,12 @@ public:
 
 private:
 
-  // Parameters
-  xt::xtensor<int   ,2> m_set;
-  xt::xtensor<double,2> m_K;
-  xt::xtensor<double,2> m_G;
+  // Material vectors
+  std::vector<Elastic> m_Elastic;
+
+  // Identifiers for each matrix entry
+  xt::xtensor<size_t,2> m_type;  // type (e.g. "Type::Elastic")
+  xt::xtensor<size_t,2> m_index; // index from the relevant material vector (e.g. "m_Elastic")
 
   // Shape
   size_t m_nelem;
@@ -169,6 +187,7 @@ private:
   // Internal check
   bool m_allSet=false;
   void checkAllSet();
+
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -178,6 +197,8 @@ private:
 // -------------------------------------------------------------------------------------------------
 
 #include "Cartesian3d.hpp"
+#include "Cartesian3d_Elastic.hpp"
+#include "Cartesian3d_Matrix.hpp"
 
 // -------------------------------------------------------------------------------------------------
 
