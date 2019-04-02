@@ -10,38 +10,40 @@ include(GNUInstallDirs)
 # ----------------
 
 # name
-project(GMatLinearElastic)
+project(GMatElastic)
 
 # file that contains the version information
-set(parse_version include/GMatLinearElastic/config.h)
+set(parse_version include/GMatElastic/config.h)
 
 # header files
 set(headers
-  include/GMatLinearElastic/config.h
-  include/GMatLinearElastic/Cartesian3d.h
-  include/GMatLinearElastic/Cartesian3d.hpp
+  include/GMatElastic/config.h
+  include/GMatElastic/Cartesian3d.h
+  include/GMatElastic/Cartesian3d.hpp
+  include/GMatElastic/Cartesian3d_Elastic.hpp
+  include/GMatElastic/Cartesian3d_Matrix.hpp
 )
 
 # automatically parse the version number
 file(READ "${parse_version}" version)
-string(REGEX MATCH "define[ \t]+GMATLINEARELASTIC_WORLD_VERSION[ \t]+([0-9]+)" _ "${version}")
+string(REGEX MATCH "define[ \t]+GMATELASTIC_WORLD_VERSION[ \t]+([0-9]+)" _ "${version}")
 set(world_version "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+GMATLINEARELASTIC_MAJOR_VERSION[ \t]+([0-9]+)" _ "${version}")
+string(REGEX MATCH "define[ \t]+GMATELASTIC_MAJOR_VERSION[ \t]+([0-9]+)" _ "${version}")
 set(major_version "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+GMATLINEARELASTIC_MINOR_VERSION[ \t]+([0-9]+)" _ "${version}")
+string(REGEX MATCH "define[ \t]+GMATELASTIC_MINOR_VERSION[ \t]+([0-9]+)" _ "${version}")
 set(minor_version "${CMAKE_MATCH_1}")
-set(GMATLINEARELASTIC_VERSION_NUMBER ${world_version}.${major_version}.${minor_version})
+set(GMATELASTIC_VERSION_NUMBER ${world_version}.${major_version}.${minor_version})
 
 # paths
 # -----
 
-set(GMATLINEARELASTIC_ROOT_DIR    "${CMAKE_INSTALL_PREFIX}")
-set(GMATLINEARELASTIC_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
-set(INCLUDE_INSTALL_DIR           "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
-set(CMAKEPACKAGE_INSTALL_DIR      "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
-set(PKGCONFIG_INSTALL_DIR         "${CMAKE_INSTALL_DATADIR}/pkgconfig")
-set(fcmake                        "GMatLinearElasticConfig.cmake")
-set(fpkg                          "GMatLinearElastic.pc")
+set(GMATELASTIC_ROOT_DIR "${CMAKE_INSTALL_PREFIX}")
+set(GMATELASTIC_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
+set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
+set(CMAKEPACKAGE_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+set(PKGCONFIG_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/pkgconfig")
+set(fcmake "GMatElasticConfig.cmake")
+set(fpkg "GMatElastic.pc")
 
 # options
 # -------
@@ -67,9 +69,9 @@ endif()
 # ---------------
 
 configure_package_config_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/GMatLinearElasticConfig.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/GMatLinearElasticConfig.cmake
-  PATH_VARS GMATLINEARELASTIC_INCLUDE_DIR GMATLINEARELASTIC_ROOT_DIR
+  ${CMAKE_CURRENT_SOURCE_DIR}/GMatElasticConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/GMatElasticConfig.cmake
+  PATH_VARS GMATELASTIC_INCLUDE_DIR GMATELASTIC_ROOT_DIR
   INSTALL_DESTINATION ${CMAKEPACKAGE_INSTALL_DIR}
   NO_CHECK_REQUIRED_COMPONENTS_MACRO
 )
