@@ -1,11 +1,11 @@
 /* =================================================================================================
 
-(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/GMatLinearElastic
+(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/GMatElastic
 
 ================================================================================================= */
 
-#ifndef GMATLINEARELASTIC_H
-#define GMATLINEARELASTIC_H
+#ifndef GMATELASTIC_H
+#define GMATELASTIC_H
 
 // -------------------------------------------------------------------------------------------------
 
@@ -38,35 +38,35 @@
 // -------------------------------------------------------------------------------------------------
 
 #ifndef NDEBUG
-#define GMATLINEARELASTIC_ENABLE_ASSERT
+#define GMATELASTIC_ENABLE_ASSERT
 #endif
 
-#ifdef GMATLINEARELASTIC_ENABLE_ASSERT
-#define GMATLINEARELASTIC_ASSERT(expr) GMATLINEARELASTIC_ASSERT_IMPL(expr, __FILE__, __LINE__)
-#define GMATLINEARELASTIC_ASSERT_IMPL(expr, file, line)                                                                   \
+#ifdef GMATELASTIC_ENABLE_ASSERT
+#define GMATELASTIC_ASSERT(expr) GMATELASTIC_ASSERT_IMPL(expr, __FILE__, __LINE__)
+#define GMATELASTIC_ASSERT_IMPL(expr, file, line)                                                                         \
     if (!(expr))                                                                                                          \
     {                                                                                                                     \
         throw std::runtime_error(std::string(file) + ':' + std::to_string(line) + ": assertion failed (" #expr ") \n\t"); \
     }
 #else
-#define GMATLINEARELASTIC_ASSERT(expr)
+#define GMATELASTIC_ASSERT(expr)
 #endif
 
 // -------------------------------------------------------------------------------------------------
 
-#define GMATLINEARELASTIC_WORLD_VERSION 0
-#define GMATLINEARELASTIC_MAJOR_VERSION 2
-#define GMATLINEARELASTIC_MINOR_VERSION 0
+#define GMATELASTIC_WORLD_VERSION 0
+#define GMATELASTIC_MAJOR_VERSION 2
+#define GMATELASTIC_MINOR_VERSION 1
 
-#define GMATLINEARELASTIC_VERSION_AT_LEAST(x,y,z) \
-  (GMATLINEARELASTIC_WORLD_VERSION>x || (GMATLINEARELASTIC_WORLD_VERSION>=x && \
-  (GMATLINEARELASTIC_MAJOR_VERSION>y || (GMATLINEARELASTIC_MAJOR_VERSION>=y && \
-                                         GMATLINEARELASTIC_MINOR_VERSION>=z))))
+#define GMATELASTIC_VERSION_AT_LEAST(x,y,z) \
+  (GMATELASTIC_WORLD_VERSION>x || (GMATELASTIC_WORLD_VERSION>=x && \
+  (GMATELASTIC_MAJOR_VERSION>y || (GMATELASTIC_MAJOR_VERSION>=y && \
+                                         GMATELASTIC_MINOR_VERSION>=z))))
 
-#define GMATLINEARELASTIC_VERSION(x,y,z) \
-  (GMATLINEARELASTIC_WORLD_VERSION==x && \
-   GMATLINEARELASTIC_MAJOR_VERSION==y && \
-   GMATLINEARELASTIC_MINOR_VERSION==z)
+#define GMATELASTIC_VERSION(x,y,z) \
+  (GMATELASTIC_WORLD_VERSION==x && \
+   GMATELASTIC_MAJOR_VERSION==y && \
+   GMATELASTIC_MINOR_VERSION==z)
 
 // -------------------------------------------------------------------------------------------------
 
