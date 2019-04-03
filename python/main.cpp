@@ -132,6 +132,7 @@ py::class_<SM::Matrix>(sm, "Matrix")
     py::arg("K"),
     py::arg("G"))
 
+  .def("ndim", &SM::Matrix::ndim)
   .def("nelem", &SM::Matrix::nelem)
   .def("nip", &SM::Matrix::nip)
 
