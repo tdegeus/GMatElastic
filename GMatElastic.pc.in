@@ -1,9 +1,9 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
 
-Name: GMatLinearElastic
+Name: GMatElastic
 Description: Linear elastic material mode,
 Requires:
-Version: @GMATLINEARELASTIC_VERSION_NUMBER@
+Version: @GMATELASTIC_VERSION_NUMBER@
 Libs:
-Cflags: -I${prefix}/@GMATLINEARELASTIC_INCLUDE_DIR@
+Cflags: -I${prefix}/@GMATELASTIC_INCLUDE_DIR@

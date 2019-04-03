@@ -1,4 +1,4 @@
-import GMatLinearElastic as gmat
+import GMatElastic       as gmat
 import matplotlib.pyplot as plt
 import numpy             as np
 
@@ -22,7 +22,7 @@ for igamma, gamma in enumerate(np.linspace(0.0, 0.1, len(epseq))):
     [  0.0,   0.0,   0.0],
   ])
 
-  Sig = mat.Sig(Eps)
+  Sig = mat.Stress(Eps)
 
   Epsd = ddot42(I4d,Eps)
   Sigd = ddot42(I4d,Sig)

@@ -119,6 +119,7 @@ public:
 
   // Shape
 
+  size_t ndim() const;
   size_t nelem() const;
   size_t nip() const;
 

@@ -1,4 +1,4 @@
-import GMatLinearElastic as gmat
+import GMatElastic       as gmat
 import GooseMPL          as gplt
 import matplotlib.pyplot as plt
 import numpy             as np
@@ -27,7 +27,7 @@ for i in range(len(x)):
   delta_Eps = np.random.random((3,3)) * x[i]
   delta_Eps = .5 * ( delta_Eps + delta_Eps.T )
 
-  Sig = mat.Sig(Eps_star + delta_Eps)
+  Sig = mat.Stress(Eps_star + delta_Eps)
 
   delta_Sig = Sig - Sig_star
 
