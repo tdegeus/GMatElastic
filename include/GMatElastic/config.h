@@ -9,9 +9,6 @@
 
 // -------------------------------------------------------------------------------------------------
 
-// use "M_PI" from "math.h"
-#define _USE_MATH_DEFINES
-
 #include <tuple>
 #include <stdexcept>
 #include <limits>
@@ -29,11 +26,6 @@
 #include <xtensor/xoperation.hpp>
 #include <xtensor/xsort.hpp>
 #include <xtensor/xmath.hpp>
-
-// -------------------------------------------------------------------------------------------------
-
-// dummy operation that can be use to suppress the "unused parameter" warnings
-#define UNUSED(p) ( (void)(p) )
 
 // -------------------------------------------------------------------------------------------------
 
@@ -56,7 +48,7 @@
 
 #define GMATELASTIC_WORLD_VERSION 0
 #define GMATELASTIC_MAJOR_VERSION 2
-#define GMATELASTIC_MINOR_VERSION 1
+#define GMATELASTIC_MINOR_VERSION 2
 
 #define GMATELASTIC_VERSION_AT_LEAST(x,y,z) \
   (GMATELASTIC_WORLD_VERSION>x || (GMATELASTIC_WORLD_VERSION>=x && \
