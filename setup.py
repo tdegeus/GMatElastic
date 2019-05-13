@@ -27,6 +27,7 @@ ext_modules = [
       pyxtensor.get_include(True ),
       pyxtensor.find_xtensor(),
       pyxtensor.find_xtl(),
+      pyxtensor.find_xsimd(),
     ],
     language='c++'
   ),
