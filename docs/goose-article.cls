@@ -1,8 +1,8 @@
 % ------------------------------------------------------------------------------
 %  @LaTeX-class-file{
 %     filename        = "goose-article.cls",
-%     version         = "0.1.1",
-%     date            = "1 April 2018",
+%     version         = "0.2.0",
+%     date            = "February 2019",
 %     codetable       = "ISO/ASCII",
 %     keywords        = "LaTeX, goose-article",
 %     supported       = "https://github.com/tdegeus/goose-article",
@@ -41,16 +41,19 @@
 \let\if@doublespacing\iffalse
 \DeclareOption{doublespacing}{\let\if@doublespacing\iftrue}
 
-\newif\if@twocolumn
-\let\if@twocolumn\iffalse
-\DeclareOption{twocolumn}{\let\if@twocolumn\iftrue}
-
-% No header
-% ---------
+% No header: [empty]
+% ------------------
 
 \newif\if@empty
 \let\if@empty\iffalse
 \DeclareOption{empty}{\let\if@empty\iftrue}
+
+% Single-column bibliography [twocolumnbib]
+% -----------------------------------------
+
+\newif\if@twocolumnbib
+\let\if@twocolumnbib\iffalse
+\DeclareOption{twocolumnbib}{\let\if@twocolumnbib\iftrue}
 
 % Font: [times,garamond,verdana]
 % ------------------------------
@@ -87,17 +90,15 @@
 \RequirePackage{fix-cm}
 \RequirePackage{graphicx}
 \RequirePackage[labelformat=simple]{subcaption}
-\RequirePackage{amssymb,amsfonts,bm,cancel}
+\RequirePackage{amssymb,amsfonts,bm}
 \RequirePackage{enumerate}
 \RequirePackage[fleqn]{amsmath}
 \RequirePackage[font={small},labelfont=bf,labelsep=period]{caption}
 \RequirePackage[bf]{titlesec}
 \RequirePackage[dvipsnames]{xcolor}
 \RequirePackage{authblk}
-\RequirePackage{hyperref}
 \RequirePackage{multicol}
-
-\renewcommand\thesubfigure{(\alph{subfigure})}
+\RequirePackage{hyperref}
 
 % ==============================================================================
 % Citation style
@@ -110,7 +111,11 @@
     \bibliographystyle{apalike}
     \setlength{\bibsep}{3pt plus 0.3ex}
     \def\bibfont{\scriptsize}
-    \oldbibliography{#1}
+    \if@twocolumnbib
+    \begin{multicols}{2}\raggedright\oldbibliography{#1}\end{multicols}
+    \else
+    \raggedright\oldbibliography{#1}
+    \fi
   }
 \else
   \RequirePackage[square,sort&compress,numbers,comma]{natbib}
@@ -119,7 +124,11 @@
     \bibliographystyle{unsrtnat}
     \setlength{\bibsep}{3pt plus 0.3ex}
     \def\bibfont{\scriptsize}
+    \if@twocolumnbib
     \begin{multicols}{2}\raggedright\oldbibliography{#1}\end{multicols}
+    \else
+    \raggedright\oldbibliography{#1}
+    \fi
   }
 \fi
 
@@ -177,16 +186,6 @@
   \AtBeginDocument{%
     \usepackage{setspace}
     \doublespacing
-  }%
-\fi
-
-% ==============================================================================
-% Two-columns
-% ==============================================================================
-
-\if@twocolumn
-  \AtBeginDocument{%
-    \twocolumn
   }%
 \fi
 
@@ -295,6 +294,14 @@
 }
 
 % ==============================================================================
+% Numbering
+% ==============================================================================
+
+% sub-figures
+
+\renewcommand\thesubfigure{(\alph{subfigure})}
+
+% ==============================================================================
 % Header and footer
 % ==============================================================================
 
@@ -312,10 +319,3 @@
 \newcommand{\header}[1]{\fancyhead[LO,RE]{#1}}
 \newcommand{\headerOdd}[1]{\fancyhead[LO]{#1}}
 \newcommand{\headerEven}[1]{\fancyhead[RE]{#1}}
-
-% ==============================================================================
-% Abstract and keywords
-% ==============================================================================
-
-\renewenvironment{abstract}{\section*{Abstract}\noindent\ignorespaces}{\ignorespacesafterend}
-\newcommand{\keywords}[1]{\vspace*{0.5eM}\noindent\textbf{Keywords: }#1}
