@@ -46,19 +46,19 @@
 
 // -------------------------------------------------------------------------------------------------
 
-#define GMATELASTIC_WORLD_VERSION 0
-#define GMATELASTIC_MAJOR_VERSION 2
-#define GMATELASTIC_MINOR_VERSION 3
+#define GMATELASTIC_VERSION_MAJOR 0
+#define GMATELASTIC_VERSION_MINOR 2
+#define GMATELASTIC_VERSION_PATCH 4
 
 #define GMATELASTIC_VERSION_AT_LEAST(x,y,z) \
-  (GMATELASTIC_WORLD_VERSION>x || (GMATELASTIC_WORLD_VERSION>=x && \
-  (GMATELASTIC_MAJOR_VERSION>y || (GMATELASTIC_MAJOR_VERSION>=y && \
-                                         GMATELASTIC_MINOR_VERSION>=z))))
+  (GMATELASTIC_VERSION_MAJOR > x || (GMATELASTI_VERSION_MAJOR >= x && \
+  (GMATELASTIC_VERSION_MINOR > y || (GMATELASTI_VERSION_MINOR >= y && \
+                                     GMATELASTI_VERSION_PATCH >= z))))
 
 #define GMATELASTIC_VERSION(x,y,z) \
-  (GMATELASTIC_WORLD_VERSION==x && \
-   GMATELASTIC_MAJOR_VERSION==y && \
-   GMATELASTIC_MINOR_VERSION==z)
+  (GMATELASTIC_VERSION_MAJOR == x && \
+   GMATELASTIC_VERSION_MINOR == y && \
+   GMATELASTIC_VERSION_PATCH == z)
 
 // -------------------------------------------------------------------------------------------------
 

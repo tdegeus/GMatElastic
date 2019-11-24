@@ -1,9 +1,7 @@
 prefix=@CMAKE_INSTALL_PREFIX@
-exec_prefix=${prefix}
+includedir=${prefix}/include
 
-Name: GMatElastic
-Description: Linear elastic material mode,
-Requires:
-Version: @GMATELASTIC_VERSION_NUMBER@
-Libs:
-Cflags: -I${prefix}/@GMATELASTIC_INCLUDE_DIR@
+Name: @PROJECT_NAME@
+Description: Linear elastic material model.
+Version: @GMATELASTIC_VERSION@
+Cflags: -I${includedir}
