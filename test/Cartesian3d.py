@@ -25,7 +25,7 @@ gamma = 0.02
 epsm  = 0.12
 # - strain
 Eps = [[epsm , gamma, 0.0 ],
-       [gamma, epsm , 0.0 ]
+       [gamma, epsm , 0.0 ],
        [0.0  , 0.0  , epsm]]
 # - stress
 Sig = mat.Stress(Eps)
