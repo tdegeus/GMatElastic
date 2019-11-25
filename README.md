@@ -2,7 +2,6 @@
 # LinearElastic
 
 [![Travis](https://travis-ci.com/tdegeus/GMatElastic.svg?branch=master)](https://travis-ci.com/tdegeus/GMatElastic)
-[![Build status](https://ci.appveyor.com/api/projects/status/c4c1l93dmejo76ym?svg=true)](https://ci.appveyor.com/project/tdegeus/gmatelastic)
 
 Linear elastic material model. An overview of the theory can be found in `docs/theory` in particular in this [PDF](docs/readme.pdf).
 

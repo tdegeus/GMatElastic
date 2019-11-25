@@ -10,9 +10,9 @@ import pybind11
 import pyxtensor
 
 header = open('include/GMatElastic/config.h','r').read()
-major = re.split(r'(.*)(\#define GMATELASTIC_VERSION_MAJOR\ )([0-9]+)(.*)',header)[3]
-minor = re.split(r'(.*)(\#define GMATELASTIC_VERSION_MINOR\ )([0-9]+)(.*)',header)[3]
-patch = re.split(r'(.*)(\#define GMATELASTIC_VERSION_PATCH\ )([0-9]+)(.*)',header)[3]
+major = re.split(r'(.*)(\#define GMATELASTIC_VERSION_MAJOR\ )([0-9]+)(.*)', header)[3]
+minor = re.split(r'(.*)(\#define GMATELASTIC_VERSION_MINOR\ )([0-9]+)(.*)', header)[3]
+patch = re.split(r'(.*)(\#define GMATELASTIC_VERSION_PATCH\ )([0-9]+)(.*)', header)[3]
 
 __version__ = '.'.join([major, minor, patch])
 
@@ -37,13 +37,13 @@ ext_modules = [
     'GMatElastic',
     ['python/main.cpp'],
     include_dirs = include_dirs,
-    language = 'c++')
-]
+    language = 'c++')]
 
 setup(
   name = 'GMatElastic',
   description = 'Linear elastic material model',
   long_description = desc,
+  keywords = 'Material model; FEM; FFT',
   version = __version__,
   license = 'MIT',
   author = 'Tom de Geus',
