@@ -15,16 +15,12 @@ Linear elastic material model. An overview of the theory can be found in `docs/t
 
 # Contents
 
-<!-- MarkdownTOC -->
+<!-- MarkdownTOC levels="1,2" -->
 
 - [Implementation](#implementation)
 - [Installation](#installation)
     - [C++ headers](#c-headers)
-        - [Using conda](#using-conda)
-    - [From source](#from-source)
     - [Python module](#python-module)
-        - [Using conda](#using-conda-1)
-    - [From source](#from-source-1)
 - [Compiling](#compiling)
     - [By hand](#by-hand)
     - [Using pkg-config](#using-pkg-config)
@@ -79,7 +75,7 @@ int main()
 conda install -c conda-forge gmatelastic
 ```
 
-## From source
+### From source
 
 ```bash
 # Download GMatElastic
@@ -93,17 +89,9 @@ make install
 
 ## Python module
 
-### Using conda
+### From source
 
-> Warning: this has the disadvantage of xsimd optimisation being switched off
-
-```bash
-conda install -c conda-forge python-gmatelastic
-```
-
-## From source
-
-> To get the prerequisites you can use conda
+> To get the prerequisites you *can* use conda
 > 
 > ```bash
 > conda install -c conda-forge pyxtensor
