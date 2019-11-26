@@ -47,7 +47,7 @@
 // -------------------------------------------------------------------------------------------------
 
 #define GMATELASTIC_VERSION_MAJOR 0
-#define GMATELASTIC_VERSION_MINOR 2
+#define GMATELASTIC_VERSION_MINOR 0
 #define GMATELASTIC_VERSION_PATCH 4
 
 #define GMATELASTIC_VERSION_AT_LEAST(x,y,z) \
