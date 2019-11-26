@@ -1,110 +1,114 @@
 
-# required to specify the c++ standard
 cmake_minimum_required(VERSION 3.0)
 
-# required for install
+# Options
+# =======
+
+project(GMatElastic)
+
+option(BUILD_TESTS "${PROJECT_NAME} Build tests" OFF)
+
+# Internals
+# =========
+
+set(GMATELASTIC_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# Version
+# =======
+
+file(
+    STRINGS "${GMATELASTIC_INCLUDE_DIR}/GMatElastic/config.h" GMatElastic_version_defines
+    REGEX "#define GMATELASTIC_VERSION_(MAJOR|MINOR|PATCH)")
+
+foreach(ver ${GMatElastic_version_defines})
+    if(ver MATCHES "#define GMATELASTIC_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
+        set(GMATELASTIC_VERSION_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
+    endif()
+endforeach()
+
+set(GMATELASTIC_VERSION
+    ${GMATELASTIC_VERSION_MAJOR}.${GMATELASTIC_VERSION_MINOR}.${GMATELASTIC_VERSION_PATCH})
+
+message(STATUS "Building GMatElastic v${GMATELASTIC_VERSION}")
+
+# Build
+# =====
+
+set(GMATELASTIC_HEADERS
+    ${GMATELASTIC_INCLUDE_DIR}/GMatElastic/Cartesian3d.h
+    ${GMATELASTIC_INCLUDE_DIR}/GMatElastic/Cartesian3d.hpp
+    ${GMATELASTIC_INCLUDE_DIR}/GMatElastic/Cartesian3d_Elastic.hpp
+    ${GMATELASTIC_INCLUDE_DIR}/GMatElastic/Cartesian3d_Matrix.hpp
+    ${GMATELASTIC_INCLUDE_DIR}/GMatElastic/config.h)
+
+add_library(${PROJECT_NAME} INTERFACE)
+
+target_include_directories(
+    ${PROJECT_NAME} INTERFACE
+    $<BUILD_INTERFACE:${GMATELASTIC_INCLUDE_DIR}>
+    $<INSTALL_INTERFACE:include>)
+
+# Installation
+# ============
+
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-# project settings
-# ----------------
+install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}-targets)
 
-# name
-project(GMatElastic)
+export(
+    EXPORT ${PROJECT_NAME}-targets
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 
-# file that contains the version information
-set(parse_version include/GMatElastic/config.h)
+install(
+    FILES ${GMATELASTIC_HEADERS}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
-# header files
-set(headers
-  include/GMatElastic/config.h
-  include/GMatElastic/Cartesian3d.h
-  include/GMatElastic/Cartesian3d.hpp
-  include/GMatElastic/Cartesian3d_Elastic.hpp
-  include/GMatElastic/Cartesian3d_Matrix.hpp
-)
-
-# automatically parse the version number
-file(READ "${parse_version}" version)
-string(REGEX MATCH "define[ \t]+GMATELASTIC_WORLD_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(world_version "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+GMATELASTIC_MAJOR_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(major_version "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+GMATELASTIC_MINOR_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(minor_version "${CMAKE_MATCH_1}")
-set(GMATELASTIC_VERSION_NUMBER ${world_version}.${major_version}.${minor_version})
-
-# paths
-# -----
-
-set(GMATELASTIC_ROOT_DIR "${CMAKE_INSTALL_PREFIX}")
-set(GMATELASTIC_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
-set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
-set(CMAKEPACKAGE_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
-set(PKGCONFIG_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/pkgconfig")
-set(fcmake "GMatElasticConfig.cmake")
-set(fpkg "GMatElastic.pc")
-
-# options
-# -------
-
-# configure pkg-config (default: on)
-option(PKGCONFIG "Build pkg-config ${fpkg} file" ON)
-
-# disable pkg-config for native Windows builds
-if(WIN32 OR CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
-  option(PKGCONFIG "Build pkg-config ${fpkg} file" OFF)
-endif()
-
-# C++ standard
-# ------------
-
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-if(NOT CMAKE_CXX_STANDARD OR CMAKE_CXX_STANDARD LESS 14)
-  set(CMAKE_CXX_STANDARD 14)
-endif()
-
-# configure CMake
-# ---------------
+set(GMATELASTIC_CMAKECONFIG_INSTALL_DIR
+    "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE
+    STRING "install path for ${PROJECT_NAME}Config.cmake")
 
 configure_package_config_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/GMatElasticConfig.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/GMatElasticConfig.cmake
-  PATH_VARS GMATELASTIC_INCLUDE_DIR GMATELASTIC_ROOT_DIR
-  INSTALL_DESTINATION ${CMAKEPACKAGE_INSTALL_DIR}
-  NO_CHECK_REQUIRED_COMPONENTS_MACRO
-)
+    "GMatElasticConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION ${GMATELASTIC_CMAKECONFIG_INSTALL_DIR})
 
-# install
-# -------
+set(_GMATELASTIC_CMAKE_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
 
-# pkg-config
-if(PKGCONFIG)
-  configure_file(${fpkg}.in ${fpkg} @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${fpkg} DESTINATION ${PKGCONFIG_INSTALL_DIR})
+unset(CMAKE_SIZEOF_VOID_P)
+
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    VERSION ${GMATELASTIC_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+
+set(CMAKE_SIZEOF_VOID_P ${_GMATELASTIC_CMAKE_SIZEOF_VOID_P})
+
+install(
+    FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    DESTINATION ${GMATELASTIC_CMAKECONFIG_INSTALL_DIR})
+
+install(
+    EXPORT ${PROJECT_NAME}-targets
+    FILE "${PROJECT_NAME}Targets.cmake"
+    DESTINATION ${GMATELASTIC_CMAKECONFIG_INSTALL_DIR})
+
+configure_file(
+    "GMatElastic.pc.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+     @ONLY)
+
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
+
+# Add builds
+# ==========
+
+if(BUILD_TESTS)
+    add_subdirectory(test)
 endif()
-
-# CMake
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${fcmake} DESTINATION ${CMAKEPACKAGE_INSTALL_DIR})
-
-# header files
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${headers} DESTINATION ${INCLUDE_INSTALL_DIR})
-
-# print information to screen
-# ---------------------------
-
-message(STATUS "")
-message(STATUS "+---------------------------------------------------------------------------------")
-message(STATUS "|")
-message(STATUS "| Use 'make install' to install in")
-message(STATUS "|   ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "|")
-message(STATUS "| To specify a custom directory call")
-message(STATUS "|   cmake /path/to/${PROJECT_NAME} -DCMAKE_INSTALL_PREFIX=yourprefix")
-message(STATUS "|")
-message(STATUS "| For custom paths, add the following line to your '~/.bashrc'")
-message(STATUS "|   export PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/share/pkgconfig:$PKG_CONFIG_PATH")
-message(STATUS "|")
-message(STATUS "+---------------------------------------------------------------------------------")
-message(STATUS "")
