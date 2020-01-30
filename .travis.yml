@@ -79,7 +79,7 @@ install:
     - conda install -c conda-forge pyxtensor
     - conda install -c conda-forge catch2
     - if [[ "$XSIMD" == "ON" ]]; then
-        conda install xsimd -c conda-forge;
+        conda install -c conda-forge xsimd;
       fi
     # Build/install the library
     - cmake . -DBUILD_TESTS=ON -DXSIMD=$XSIMD
