@@ -111,7 +111,7 @@ inline double Sigeq(const Tensor2& Sig)
     return std::sqrt(1.5 * A2_ddot_B2(Sigd, Sigd));
 }
 
-inline void hydrostatic(const xt:xtensor<double, 3>& A, xt::xtensor<double,1>& Am)
+inline void hydrostatic(const xt::xtensor<double,3>& A, xt::xtensor<double,1>& Am)
 {
     GMATELASTIC_ASSERT(A.shape() == std::decay_t<decltype(A)>::shape_type({Am.shape(0), 3, 3}));
 
