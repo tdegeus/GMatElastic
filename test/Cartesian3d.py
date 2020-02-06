@@ -2,14 +2,11 @@
 import GMatElastic.Cartesian3d as GMat
 import numpy as np
 
-
 def EQ(a,b):
   assert np.abs(a-b) < 1.e-12
 
-
 def ALLEQ(a, b):
   assert np.allclose(a, b)
-
 
 K = 12.3
 G = 45.6
@@ -68,6 +65,5 @@ ALLEQ(sig[:,:,0,2], 0.0)
 ALLEQ(sig[:,:,1,2], 0.0)
 ALLEQ(sig[:,:,2,0], 0.0)
 ALLEQ(sig[:,:,2,1], 0.0)
-
 
 print('All checks passed')
