@@ -48,9 +48,9 @@ mat = GMat.Matrix(nelem, nip)
 I = np.ones([nelem, nip], dtype='int')
 mat.setElastic(I, K, G)
 
-eps = np.zeros((nelem, nip, 2, 2))
-for i in range(2):
-    for j in range(2):
+eps = np.zeros((nelem, nip, 3, 3))
+for i in range(3):
+    for j in range(3):
         eps[:, :, i, j] = Eps[i, j]
 
 sig = mat.Stress(eps)
