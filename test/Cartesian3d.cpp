@@ -7,7 +7,6 @@
 
 namespace GM = GMatElastic::Cartesian3d;
 
-
 TEST_CASE("GMatElastic::Cartesian3d", "Cartesian3d.h")
 {
 
@@ -23,7 +22,6 @@ double epsm = 0.12;
 Eps.fill(0.0);
 Eps(0,0) = Eps(1,1) = Eps(2,2) = epsm;
 Eps(0,1) = Eps(1,0) = gamma;
-
 
 SECTION("Elastic: simple shear + volumetric deformation")
 {
@@ -41,7 +39,6 @@ SECTION("Elastic: simple shear + volumetric deformation")
     EQ(Sig(2,0), 0.0);
     EQ(Sig(2,1), 0.0);
 }
-
 
 SECTION("Matrix: simple shear + volumetric deformation")
 {
@@ -81,6 +78,5 @@ SECTION("Matrix: simple shear + volumetric deformation")
     REQUIRE(xt::allclose(xt::view(sig, xt::all(), xt::all(), xt::keep(2), xt::keep(0)), 0.0));
     REQUIRE(xt::allclose(xt::view(sig, xt::all(), xt::all(), xt::keep(2), xt::keep(1)), 0.0));
 }
-
 
 }
