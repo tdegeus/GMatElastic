@@ -9,7 +9,7 @@ import os
 import pybind11
 import pyxtensor
 
-header = open('include/GMatElastic/config.h','r').read()
+header = open('include/GMatElastic/config.h', 'r').read()
 major = re.split(r'(.*)(\#define GMATELASTIC_VERSION_MAJOR\ )([0-9]+)(.*)', header)[3]
 minor = re.split(r'(.*)(\#define GMATELASTIC_VERSION_MINOR\ )([0-9]+)(.*)', header)[3]
 patch = re.split(r'(.*)(\#define GMATELASTIC_VERSION_PATCH\ )([0-9]+)(.*)', header)[3]

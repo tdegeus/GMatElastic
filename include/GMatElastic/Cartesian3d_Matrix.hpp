@@ -65,6 +65,7 @@ inline xt::xtensor<double,2> Matrix::K() const
             }
         }
     }
+
     return out;
 }
 
@@ -285,8 +286,8 @@ inline void Matrix::stress(const xt::xtensor<double,4>& a_Eps, xt::xtensor<doubl
 
 inline void Matrix::tangent(
     const xt::xtensor<double,4>& a_Eps,
-    xt::xtensor<double,4>& a_Sig,
-    xt::xtensor<double,6>& a_C) const
+          xt::xtensor<double,4>& a_Sig,
+          xt::xtensor<double,6>& a_C) const
 {
     GMATELASTIC_ASSERT(m_allSet);
     GMATELASTIC_ASSERT(
