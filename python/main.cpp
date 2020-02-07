@@ -108,11 +108,11 @@ sm.def("Sigeq",
 
 py::class_<SM::Elastic>(sm, "Elastic")
 
-    .def(py::init<double, double>(), "Linear elastic material point", py::arg("K"), py::arg("G"))
+    .def(py::init<double, double>(), "Linear elastic material point.", py::arg("K"), py::arg("G"))
 
-    .def("K", &SM::Elastic::K, "Returns the bulk modulus")
+    .def("K", &SM::Elastic::K, "Returns the bulk modulus.")
 
-    .def("G", &SM::Elastic::G, "Returns the shear modulus")
+    .def("G", &SM::Elastic::G, "Returns the shear modulus.")
 
     .def("Stress",
         &SM::Elastic::Stress,
