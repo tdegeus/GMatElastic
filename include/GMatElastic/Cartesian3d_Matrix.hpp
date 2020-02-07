@@ -65,6 +65,7 @@ inline xt::xtensor<double,2> Matrix::K() const
             }
         }
     }
+
     return out;
 }
 
