@@ -108,11 +108,11 @@ sm.def("Sigeq",
 
 py::class_<SM::Elastic>(sm, "Elastic")
 
-    .def(py::init<double, double>(), "Linear elastic material point", py::arg("K"), py::arg("G"))
+    .def(py::init<double, double>(), "Linear elastic material point.", py::arg("K"), py::arg("G"))
 
-    .def("K", &SM::Elastic::K, "Returns the bulk modulus")
+    .def("K", &SM::Elastic::K, "Returns the bulk modulus.")
 
-    .def("G", &SM::Elastic::G, "Returns the shear modulus")
+    .def("G", &SM::Elastic::G, "Returns the shear modulus.")
 
     .def("Stress",
         &SM::Elastic::Stress,
@@ -121,7 +121,7 @@ py::class_<SM::Elastic>(sm, "Elastic")
 
     .def("Tangent",
         &SM::Elastic::Tangent,
-        "Returns tangent stiffness tensor (fourth order), for a given strain tensor.",
+        "Returns stress and tangent stiffness tensors, for a given strain tensor.",
         py::arg("Eps"))
 
     .def("__repr__", [](const SM::Elastic&) { return "<GMatElastic.Cartesian3d.Elastic>"; });
@@ -201,7 +201,8 @@ py::class_<SM::Matrix>(sm, "Matrix")
 
     .def("Tangent",
         &SM::Matrix::Tangent,
-        "Returns matrix of tangent stiffness tensors, for a given matrix of strain tensors.",
+        "Returns matrices of stress tangent stiffness tensors, "
+        "for a given matrix of strain tensors.",
         py::arg("Eps"))
 
     .def("__repr__", [](const SM::Matrix&) { return "<GMatElastic.Cartesian3d.Matrix>"; });

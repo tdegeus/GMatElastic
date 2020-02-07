@@ -156,7 +156,9 @@ public:
 
     // Compute (no allocation, overwrites last argument)
 
-    void stress(const xt::xtensor<double,4>& Eps, xt::xtensor<double,4>& Sig) const;
+    void stress(
+        const xt::xtensor<double,4>& Eps,
+              xt::xtensor<double,4>& Sig) const;
 
     void tangent(
         const xt::xtensor<double,4>& Eps,
