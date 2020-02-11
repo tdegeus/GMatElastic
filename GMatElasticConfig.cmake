@@ -6,14 +6,14 @@
 #
 # In addition, it sets the following variables:
 #
-#     GMatElastic_FOUND - true if GMatElastic found
-#     GMatElastic_VERSION - GMatElastic's version
-#     GMatElastic_INCLUDE_DIRS - the directory containing GMatElastic headers
+#     GMatElastic_FOUND - true if the library is found
+#     GMatElastic_VERSION - the library's version
+#     GMatElastic_INCLUDE_DIRS - directory containing the library's headers
 #
 # The following support targets are defined to simplify things:
 #
 #     GMatElastic::compiler_warnings - enable compiler warnings
-#     GMatElastic::assert - enable GMatElastic assertions
+#     GMatElastic::assert - enable library assertions
 #     GMatElastic::debug - enable all assertions (slow)
 
 include(CMakeFindDependencyMacro)
@@ -22,8 +22,14 @@ include(CMakeFindDependencyMacro)
 
 if(NOT TARGET GMatElastic)
     include("${CMAKE_CURRENT_LIST_DIR}/GMatElasticTargets.cmake")
-    get_target_property(GMatElastic_INCLUDE_DIRS GMatElastic INTERFACE_INCLUDE_DIRECTORIES)
 endif()
+
+# Define "GMatElastic_INCLUDE_DIRS"
+
+get_target_property(
+    GMatElastic_INCLUDE_DIRS
+    GMatElastic
+    INTERFACE_INCLUDE_DIRECTORIES)
 
 # Find dependencies
 
