@@ -187,8 +187,8 @@ private:
     static const size_t m_ndim = 3;
 
     // Internal check
-    bool m_allSet = false;
-    void checkAllSet();
+    bool m_allSet = false; // true if all points have a material assigned
+    void checkAllSet(); // check if all points have a material assigned (modifies "m_allSet")
 };
 
 // Internal support functions

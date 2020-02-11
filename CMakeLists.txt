@@ -1,3 +1,4 @@
+
 cmake_minimum_required(VERSION 3.0)
 
 # Basic settings
@@ -10,21 +11,21 @@ option(BUILD_TESTS "${PROJECT_NAME} Build tests" OFF)
 # Version
 # =======
 
-file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/include/GMatElastic/config.h" GMatElastic_version_defines
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/include/GMatElastic/config.h"
+             _GMAT_version_defines
      REGEX "#define GMATELASTIC_VERSION_(MAJOR|MINOR|PATCH)")
 
-foreach(ver ${GMatElastic_version_defines})
+foreach(ver ${_GMAT_version_defines})
     if(ver MATCHES "#define GMATELASTIC_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
-    set(GMATELASTIC_VERSION_${CMAKE_MATCH_1}
-        "${CMAKE_MATCH_2}"
-        CACHE INTERNAL "")
+        set(_GMAT_VERSION_${CMAKE_MATCH_1}
+            "${CMAKE_MATCH_2}"
+            CACHE INTERNAL "")
     endif()
 endforeach()
 
-set(GMATELASTIC_VERSION
-    ${GMATELASTIC_VERSION_MAJOR}.${GMATELASTIC_VERSION_MINOR}.${GMATELASTIC_VERSION_PATCH})
+set(_GMAT_VERSION ${_GMAT_VERSION_MAJOR}.${_GMAT_VERSION_MINOR}.${_GMAT_VERSION_PATCH})
 
-message(STATUS "Building GMatElastic v${GMATELASTIC_VERSION}")
+message(STATUS "Building GMatElastic v${_GMAT_VERSION}")
 
 # Set target
 # ==========
@@ -50,18 +51,19 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/" DESTINATION include)
 install(TARGETS GMatElastic EXPORT GMatElastic-targets)
 
 install(
-  EXPORT GMatElastic-targets
-  FILE GMatElasticTargets.cmake
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/GMatElastic")
+    EXPORT GMatElastic-targets
+    FILE GMatElasticTargets.cmake
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/GMatElastic")
 
-set(_GMATELASTIC ${CMAKE_SIZEOF_VOID_P})
+set(_GMAT ${CMAKE_SIZEOF_VOID_P})
 unset(CMAKE_SIZEOF_VOID_P)
 
-write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/GMatElasticConfigVersion.cmake"
-    VERSION ${GMATELASTIC_VERSION}
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/GMatElasticConfigVersion.cmake"
+    VERSION ${_GMAT_VERSION}
     COMPATIBILITY AnyNewerVersion)
 
-set(CMAKE_SIZEOF_VOID_P ${_GMATELASTIC})
+set(CMAKE_SIZEOF_VOID_P ${_GMAT})
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/GMatElasticConfig.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/GMatElasticConfigVersion.cmake"
