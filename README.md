@@ -195,6 +195,9 @@ Using *CMake* this can be done using the `GMatElastic::assert` target
 >   Using *CMake* all assertions are enabled using the `GMatElastic::debug` target 
 >   (see [below](#using-cmake)).
 
+>   The library's assertions are enabled in the Python interface, 
+>   but debugging with *xtensor* is disabled.
+
 # Installation
 
 ## C++ headers
