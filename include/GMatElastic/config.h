@@ -7,23 +7,17 @@
 #ifndef GMATELASTIC_H
 #define GMATELASTIC_H
 
-#include <tuple>
 #include <stdexcept>
 #include <limits>
 #include <math.h>
-#include <iostream>
-#include <vector>
-#include <tuple>
-#include <xtensor/xarray.hpp>
-#include <xtensor/xtensor.hpp>
-#include <xtensor/xnoalias.hpp>
-#include <xtensor/xfixed.hpp>
 #include <xtensor/xadapt.hpp>
-#include <xtensor/xview.hpp>
-#include <xtensor/xio.hpp>
+#include <xtensor/xfixed.hpp>
+#include <xtensor/xmath.hpp>
+#include <xtensor/xnoalias.hpp>
 #include <xtensor/xoperation.hpp>
 #include <xtensor/xsort.hpp>
-#include <xtensor/xmath.hpp>
+#include <xtensor/xtensor.hpp>
+#include <xtensor/xview.hpp>
 
 #ifdef GMATELASTIC_ENABLE_ASSERT
 
