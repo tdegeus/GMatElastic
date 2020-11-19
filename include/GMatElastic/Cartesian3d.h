@@ -190,7 +190,7 @@ private:
 } // namespace GMatElastic
 
 #include "Cartesian3d.hpp"
-#include "Cartesian3d_Elastic.hpp"
 #include "Cartesian3d_Array.hpp"
+#include "Cartesian3d_Elastic.hpp"
 
 #endif
