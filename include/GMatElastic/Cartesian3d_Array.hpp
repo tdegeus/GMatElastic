@@ -12,30 +12,20 @@
 namespace GMatElastic {
 namespace Cartesian3d {
 
-template <size_t rank>
-inline Array<rank>::Array(const std::array<size_t, rank>& shape) : m_shape(shape)
+template <size_t N>
+inline Array<N>::Array(const std::array<size_t, N>& shape)
 {
+    this->init(shape);
     m_allSet = false;
-    size_t nd = m_ndim;
-    std::copy(shape.begin(), shape.end(), m_shape_tensor2.begin());
-    std::copy(shape.begin(), shape.end(), m_shape_tensor4.begin());
-    std::fill(m_shape_tensor2.begin() + rank, m_shape_tensor2.end(), nd);
-    std::fill(m_shape_tensor4.begin() + rank, m_shape_tensor4.end(), nd);
-    m_size = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<size_t>());
     m_type = xt::ones<size_t>(m_shape) * Type::Unset;
     m_index = xt::empty<size_t>(m_shape);
 }
 
-template <size_t rank>
-inline Array<rank>::Array(const std::array<size_t, rank>& shape, double K, double G) : m_shape(shape)
+template <size_t N>
+inline Array<N>::Array(const std::array<size_t, N>& shape, double K, double G)
 {
+    this->init(shape);
     m_allSet = false;
-    size_t nd = m_ndim;
-    std::copy(shape.begin(), shape.end(), m_shape_tensor2.begin());
-    std::copy(shape.begin(), shape.end(), m_shape_tensor4.begin());
-    std::fill(m_shape_tensor2.begin() + rank, m_shape_tensor2.end(), nd);
-    std::fill(m_shape_tensor4.begin() + rank, m_shape_tensor4.end(), nd);
-    m_size = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<size_t>());
     m_type = xt::ones<size_t>(m_shape) * Type::Elastic;
     m_index = xt::arange<size_t>(m_size).reshape(m_shape);
 
@@ -44,17 +34,11 @@ inline Array<rank>::Array(const std::array<size_t, rank>& shape, double K, doubl
     }
 }
 
-template <size_t rank>
-inline std::array<size_t, rank> Array<rank>::shape() const
-{
-    return m_shape;
-}
-
-template <size_t rank>
-inline xt::xtensor<double, rank> Array<rank>::K() const
+template <size_t N>
+inline xt::xtensor<double, N> Array<N>::K() const
 {
     GMATELASTIC_ASSERT(m_allSet);
-    xt::xtensor<double, rank> ret = xt::empty<double>(m_shape);
+    xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
@@ -68,11 +52,11 @@ inline xt::xtensor<double, rank> Array<rank>::K() const
     return ret;
 }
 
-template <size_t rank>
-inline xt::xtensor<double, rank> Array<rank>::G() const
+template <size_t N>
+inline xt::xtensor<double, N> Array<N>::G() const
 {
     GMATELASTIC_ASSERT(m_allSet);
-    xt::xtensor<double, rank> ret = xt::empty<double>(m_shape);
+    xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
@@ -86,151 +70,31 @@ inline xt::xtensor<double, rank> Array<rank>::G() const
     return ret;
 }
 
-template <size_t rank>
-inline xt::xtensor<double, rank + 2> Array<rank>::I2() const
-{
-    xt::xtensor<double, rank + 2> ret = xt::empty<double>(m_shape_tensor2);
-
-    #pragma omp parallel
-    {
-        Tensor2 unit = Cartesian3d::I2();
-        size_t stride = m_ndim * m_ndim;
-
-        #pragma omp for
-        for (size_t i = 0; i < m_size; ++i) {
-            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim>());
-            xt::noalias(view) = unit;
-        }
-    }
-
-    return ret;
-}
-
-template <size_t rank>
-inline xt::xtensor<double, rank + 4> Array<rank>::II() const
-{
-    xt::xtensor<double, rank + 4> ret = xt::empty<double>(m_shape_tensor4);
-
-    #pragma omp parallel
-    {
-        Tensor4 unit = Cartesian3d::II();
-        size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
-
-        #pragma omp for
-        for (size_t i = 0; i < m_size; ++i) {
-            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
-            xt::noalias(view) = unit;
-        }
-    }
-
-    return ret;
-}
-
-template <size_t rank>
-inline xt::xtensor<double, rank + 4> Array<rank>::I4() const
-{
-    xt::xtensor<double, rank + 4> ret = xt::empty<double>(m_shape_tensor4);
-
-    #pragma omp parallel
-    {
-        Tensor4 unit = Cartesian3d::I4();
-        size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
-
-        #pragma omp for
-        for (size_t i = 0; i < m_size; ++i) {
-            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
-            xt::noalias(view) = unit;
-        }
-    }
-
-    return ret;
-}
-
-template <size_t rank>
-inline xt::xtensor<double, rank + 4> Array<rank>::I4rt() const
-{
-    xt::xtensor<double, rank + 4> ret = xt::empty<double>(m_shape_tensor4);
-
-    #pragma omp parallel
-    {
-        Tensor4 unit = Cartesian3d::I4rt();
-        size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
-
-        #pragma omp for
-        for (size_t i = 0; i < m_size; ++i) {
-            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
-            xt::noalias(view) = unit;
-        }
-    }
-
-    return ret;
-}
-
-template <size_t rank>
-inline xt::xtensor<double, rank + 4> Array<rank>::I4s() const
-{
-    xt::xtensor<double, rank + 4> ret = xt::empty<double>(m_shape_tensor4);
-
-    #pragma omp parallel
-    {
-        Tensor4 unit = Cartesian3d::I4s();
-        size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
-
-        #pragma omp for
-        for (size_t i = 0; i < m_size; ++i) {
-            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
-            xt::noalias(view) = unit;
-        }
-    }
-
-    return ret;
-}
-
-template <size_t rank>
-inline xt::xtensor<double, rank + 4> Array<rank>::I4d() const
-{
-    xt::xtensor<double, rank + 4> ret = xt::empty<double>(m_shape_tensor4);
-
-    #pragma omp parallel
-    {
-        Tensor4 unit = Cartesian3d::I4d();
-        size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
-
-        #pragma omp for
-        for (size_t i = 0; i < m_size; ++i) {
-            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
-            xt::noalias(view) = unit;
-        }
-    }
-
-    return ret;
-}
-
-template <size_t rank>
-inline xt::xtensor<size_t, rank> Array<rank>::type() const
+template <size_t N>
+inline xt::xtensor<size_t, N> Array<N>::type() const
 {
     GMATELASTIC_ASSERT(m_allSet);
     return m_type;
 }
 
-template <size_t rank>
-inline xt::xtensor<size_t, rank> Array<rank>::isElastic() const
+template <size_t N>
+inline xt::xtensor<size_t, N> Array<N>::isElastic() const
 {
     GMATELASTIC_ASSERT(m_allSet);
-    xt::xtensor<size_t, rank> ret = xt::where(xt::equal(m_type, Type::Elastic), 1ul, 0ul);
+    xt::xtensor<size_t, N> ret = xt::where(xt::equal(m_type, Type::Elastic), 1ul, 0ul);
     return ret;
 }
 
-template <size_t rank>
-inline void Array<rank>::check() const
+template <size_t N>
+inline void Array<N>::check() const
 {
     if (xt::any(xt::equal(m_type, Type::Unset))) {
         throw std::runtime_error("Points without material found");
     }
 }
 
-template <size_t rank>
-inline void Array<rank>::checkAllSet()
+template <size_t N>
+inline void Array<N>::checkAllSet()
 {
     if (xt::any(xt::equal(m_type, Type::Unset))) {
         m_allSet = false;
@@ -240,8 +104,8 @@ inline void Array<rank>::checkAllSet()
     }
 }
 
-template <size_t rank>
-inline void Array<rank>::setElastic(const xt::xtensor<size_t, rank>& I, double K, double G)
+template <size_t N>
+inline void Array<N>::setElastic(const xt::xtensor<size_t, N>& I, double K, double G)
 {
     GMATELASTIC_ASSERT(m_type.shape() == I.shape());
     GMATELASTIC_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
@@ -259,8 +123,8 @@ inline void Array<rank>::setElastic(const xt::xtensor<size_t, rank>& I, double K
     this->checkAllSet();
 }
 
-template <size_t rank>
-inline void Array<rank>::setStrain(const xt::xtensor<double, rank + 2>& A)
+template <size_t N>
+inline void Array<N>::setStrain(const xt::xtensor<double, N + 2>& A)
 {
     GMATELASTIC_ASSERT(m_allSet);
     GMATELASTIC_ASSERT(xt::has_shape(A, m_shape_tensor2));
@@ -269,14 +133,14 @@ inline void Array<rank>::setStrain(const xt::xtensor<double, rank + 2>& A)
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].setStrainIterator(&A.data()[i * m_ndim * m_ndim]);
+            m_Elastic[m_index.data()[i]].setStrainIterator(&A.data()[i * m_stride_tensor2]);
             break;
         }
     }
 }
 
-template <size_t rank>
-inline void Array<rank>::stress(xt::xtensor<double, rank + 2>& A) const
+template <size_t N>
+inline void Array<N>::stress(xt::xtensor<double, N + 2>& A) const
 {
     GMATELASTIC_ASSERT(m_allSet);
     GMATELASTIC_ASSERT(xt::has_shape(A, m_shape_tensor2));
@@ -285,22 +149,21 @@ inline void Array<rank>::stress(xt::xtensor<double, rank + 2>& A) const
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].stressIterator(&A.data()[i * m_ndim * m_ndim]);
+            m_Elastic[m_index.data()[i]].stressIterator(&A.data()[i * m_stride_tensor2]);
             break;
         }
     }
 }
 
-template <size_t rank>
-inline void Array<rank>::tangent(xt::xtensor<double, rank + 4>& A) const
+template <size_t N>
+inline void Array<N>::tangent(xt::xtensor<double, N + 4>& A) const
 {
     GMATELASTIC_ASSERT(m_allSet);
     GMATELASTIC_ASSERT(xt::has_shape(A, m_shape_tensor4));
-    size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        auto c = xt::adapt(&A.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+        auto c = xt::adapt(&A.data()[i * m_stride_tensor4], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
         switch (m_type.data()[i]) {
         case Type::Elastic:
             m_Elastic[m_index.data()[i]].tangent(c);
@@ -309,18 +172,18 @@ inline void Array<rank>::tangent(xt::xtensor<double, rank + 4>& A) const
     }
 }
 
-template <size_t rank>
-inline xt::xtensor<double, rank + 2> Array<rank>::Stress() const
+template <size_t N>
+inline xt::xtensor<double, N + 2> Array<N>::Stress() const
 {
-    xt::xtensor<double, rank + 2> ret = xt::empty<double>(m_shape_tensor2);
+    xt::xtensor<double, N + 2> ret = xt::empty<double>(m_shape_tensor2);
     this->stress(ret);
     return ret;
 }
 
-template <size_t rank>
-inline xt::xtensor<double, rank + 4> Array<rank>::Tangent() const
+template <size_t N>
+inline xt::xtensor<double, N + 4> Array<N>::Tangent() const
 {
-    xt::xtensor<double, rank + 4> ret = xt::empty<double>(m_shape_tensor4);
+    xt::xtensor<double, N + 4> ret = xt::empty<double>(m_shape_tensor4);
     this->tangent(ret);
     return ret;
 }

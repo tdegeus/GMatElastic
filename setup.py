@@ -40,7 +40,7 @@ ext_modules = [Extension(
 
 setup(
     name = 'GMatElastic',
-    description = 'Linear elastic material model',
+    description = 'Linear elastic material model.',
     long_description = desc,
     keywords = 'Material model; FEM; FFT',
     version = __version__,

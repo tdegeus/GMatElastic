@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+dependencies:
+  - gmattensor
+  - cmake
+  - xtensor
+  - xsimd
+  - python
+  - pyxtensor

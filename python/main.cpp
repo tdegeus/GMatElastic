@@ -15,65 +15,83 @@
 
 namespace py = pybind11;
 
-template <size_t rank, class T>
-auto add_common_members_array(T& self)
+template <class S, class T>
+auto construct_Array(T& self)
 {
     namespace SM = GMatElastic::Cartesian3d;
 
-    self.def(py::init<std::array<size_t, rank>>(), "Array of material points.", py::arg("shape"))
+    self.def(py::init<std::array<size_t, S::rank>>(), "Array of material points.", py::arg("shape"))
 
-        .def("shape", &SM::Array<rank>::shape, "Shape of array.")
-
-        .def("K", &SM::Array<rank>::K, "Array with bulk moduli.")
-
-        .def("G", &SM::Array<rank>::G, "Array with shear moduli.")
-
-        .def("I2", &SM::Array<rank>::I2, "Array with 2nd-order unit tensors.")
-
-        .def("II", &SM::Array<rank>::II, "Array with 4th-order tensors = dyadic(I2, I2).")
-
-        .def("I4", &SM::Array<rank>::I4, "Array with 4th-order unit tensors.")
-
-        .def("I4rt", &SM::Array<rank>::I4rt, "Array with 4th-order right-transposed unit tensors.")
-
-        .def("I4s", &SM::Array<rank>::I4s, "Array with 4th-order symmetric projection tensors.")
-
-        .def("I4d", &SM::Array<rank>::I4d, "Array with 4th-order deviatoric projection tensors.")
-
-        .def("type", &SM::Array<rank>::type, "Array with material types.")
-
-        .def("isElastic", &SM::Array<rank>::isElastic, "Boolean-matrix: true for Elastic.")
-
-        .def("check", &SM::Array<rank>::check, "Throws if any unset point is found.")
+        .def("shape", &S::shape, "Shape of array.")
+        .def("I2", &S::I2, "Array with 2nd-order unit tensors.")
+        .def("II", &S::II, "Array with 4th-order tensors = dyadic(I2, I2).")
+        .def("I4", &S::I4, "Array with 4th-order unit tensors.")
+        .def("I4rt", &S::I4rt, "Array with 4th-order right-transposed unit tensors.")
+        .def("I4s", &S::I4s, "Array with 4th-order symmetric projection tensors.")
+        .def("I4d", &S::I4d, "Array with 4th-order deviatoric projection tensors.")
+        .def("K", &S::K, "Array with bulk moduli.")
+        .def("G", &S::G, "Array with shear moduli.")
+        .def("type", &S::type, "Array with material types.")
+        .def("isElastic", &S::isElastic, "Boolean-matrix: true for Elastic.")
+        .def("check", &S::check, "Throws if any unset point is found.")
 
         .def(
             "setElastic",
-            py::overload_cast<const xt::xtensor<size_t, rank>&, double, double>(
-                &SM::Array<rank>::setElastic),
+            &S::setElastic,
             "Set specific entries 'Elastic'.",
             py::arg("I"),
             py::arg("K"),
             py::arg("G"))
 
-        .def(
-            "setStrain",
-            &SM::Array<rank>::setStrain,
-            "Set matrix of strain tensors.",
-            py::arg("Eps"))
+        .def("setStrain", &S::setStrain, "Set strain tensors.", py::arg("Eps"))
+        .def("Stress", &S::Stress, "Get stress tensors.")
+        .def("Tangent", &S::Tangent, "Get stiffness tensors.")
 
-        .def(
-            "Stress",
-            &SM::Array<rank>::Stress,
-            "Returns matrix of stress tensors, given the current strain.")
-
-        .def(
-            "Tangent",
-            &SM::Array<rank>::Tangent,
-            "Returns matrices of stress tangent stiffness tensors, given the current strain.")
-
-        .def("__repr__", [](const SM::Array<rank>&) {
+        .def("__repr__", [](const S&) {
             return "<GMatElastic.Cartesian3d.Array>";
         });
+}
+
+template <class S, class T>
+void add_deviatoric_overloads(T& module)
+{
+    module.def(
+        "Deviatoric",
+        static_cast<S (*)(const S&)>(&GMatElastic::Cartesian3d::Deviatoric<S>),
+        "Deviatoric part of a(n) (array of) tensor(s).",
+        py::arg("A"));
+}
+
+template <class R, class S, class T>
+void add_hydrostatic_overloads(T& module)
+{
+    module.def(
+        "Hydrostatic",
+        static_cast<R (*)(const S&)>(&GMatElastic::Cartesian3d::Hydrostatic<S>),
+        "Hydrostatic part of a(n) (array of) tensor(s).",
+        py::arg("A"));
+}
+
+template <class R, class S, class T>
+void add_epseq_overloads(T& module)
+{
+    module.def(
+        "Epseq",
+        static_cast<R (*)(const S&)>(
+            &GMatElastic::Cartesian3d::Epseq<S>),
+        "Equivalent strain of a(n) (array of) tensor(s).",
+        py::arg("A"));
+}
+
+template <class R, class S, class T>
+void add_sigeq_overloads(T& module)
+{
+    module.def(
+        "Sigeq",
+        static_cast<R (*)(const S&)>(
+            &GMatElastic::Cartesian3d::Sigeq<S>),
+        "Equivalent stress of a(n) (array of) tensor(s).",
+        py::arg("A"));
 }
 
 PYBIND11_MODULE(GMatElastic, m)
@@ -100,89 +118,18 @@ PYBIND11_MODULE(GMatElastic, m)
 
     // Tensor algebra
 
-    sm.def(
-        "Deviatoric",
-        static_cast<xt::xtensor<double, 4> (*)(const xt::xtensor<double, 4>&)>(
-            &SM::Deviatoric<xt::xtensor<double, 4>>),
-        "Deviatoric part of a 2nd-order tensor. Returns matrix of 2nd-order tensors.",
-        py::arg("A"));
-
-    sm.def(
-        "Deviatoric",
-        static_cast<xt::xtensor<double, 3> (*)(const xt::xtensor<double, 3>&)>(
-            &SM::Deviatoric<xt::xtensor<double, 3>>),
-        "Deviatoric part of a 2nd-order tensor. Returns list of 2nd-order tensors.",
-        py::arg("A"));
-
-    sm.def(
-        "Deviatoric",
-        static_cast<xt::xtensor<double, 2> (*)(const xt::xtensor<double, 2>&)>(
-            &SM::Deviatoric<xt::xtensor<double, 2>>),
-        "Deviatoric part of a 2nd-order tensor. Returns 2nd-order tensor.",
-        py::arg("A"));
-
-    sm.def(
-        "Hydrostatic",
-        static_cast<xt::xtensor<double, 2> (*)(const xt::xtensor<double, 4>&)>(
-            &SM::Hydrostatic<xt::xtensor<double, 4>>),
-        "Hydrostatic part of a 2nd-order tensor. Returns matrix (of scalars).",
-        py::arg("A"));
-
-    sm.def(
-        "Hydrostatic",
-        static_cast<xt::xtensor<double, 1> (*)(const xt::xtensor<double, 3>&)>(
-            &SM::Hydrostatic<xt::xtensor<double, 3>>),
-        "Hydrostatic part of a 2nd-order tensor. Returns list (of scalars).",
-        py::arg("A"));
-
-    sm.def(
-        "Hydrostatic",
-        static_cast<xt::xtensor<double, 0> (*)(const xt::xtensor<double, 2>&)>(
-            &SM::Hydrostatic<xt::xtensor<double, 2>>),
-        "Hydrostatic part of a 2nd-order tensor. Returns scalar.",
-        py::arg("A"));
-
-    sm.def(
-        "Epseq",
-        static_cast<xt::xtensor<double, 2> (*)(const xt::xtensor<double, 4>&)>(
-            &SM::Epseq<xt::xtensor<double, 4>>),
-        "Equivalent strain. Returns matrix (of scalars).",
-        py::arg("A"));
-
-    sm.def(
-        "Epseq",
-        static_cast<xt::xtensor<double, 1> (*)(const xt::xtensor<double, 3>&)>(
-            &SM::Epseq<xt::xtensor<double, 3>>),
-        "Equivalent strain. Returns list (of scalars).",
-        py::arg("A"));
-
-    sm.def(
-        "Epseq",
-        static_cast<xt::xtensor<double, 0> (*)(const xt::xtensor<double, 2>&)>(
-            &SM::Epseq<xt::xtensor<double, 2>>),
-        "Equivalent strain. Returns scalar.",
-        py::arg("A"));
-
-    sm.def(
-        "Sigeq",
-        static_cast<xt::xtensor<double, 2> (*)(const xt::xtensor<double, 4>&)>(
-            &SM::Sigeq<xt::xtensor<double, 4>>),
-        "Equivalent stress. Returns matrix (of scalars).",
-        py::arg("A"));
-
-    sm.def(
-        "Sigeq",
-        static_cast<xt::xtensor<double, 1> (*)(const xt::xtensor<double, 3>&)>(
-            &SM::Sigeq<xt::xtensor<double, 3>>),
-        "Equivalent stress. Returns list (of scalars).",
-        py::arg("A"));
-
-    sm.def(
-        "Sigeq",
-        static_cast<xt::xtensor<double, 0> (*)(const xt::xtensor<double, 2>&)>(
-            &SM::Sigeq<xt::xtensor<double, 2>>),
-        "Equivalent stress. Returns scalar.",
-        py::arg("A"));
+    add_deviatoric_overloads<xt::xtensor<double, 4>>(sm);
+    add_deviatoric_overloads<xt::xtensor<double, 3>>(sm);
+    add_deviatoric_overloads<xt::xtensor<double, 2>>(sm);
+    add_hydrostatic_overloads<xt::xtensor<double, 2>, xt::xtensor<double, 4>>(sm);
+    add_hydrostatic_overloads<xt::xtensor<double, 1>, xt::xtensor<double, 3>>(sm);
+    add_hydrostatic_overloads<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
+    add_epseq_overloads<xt::xtensor<double, 2>, xt::xtensor<double, 4>>(sm);
+    add_epseq_overloads<xt::xtensor<double, 1>, xt::xtensor<double, 3>>(sm);
+    add_epseq_overloads<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
+    add_sigeq_overloads<xt::xtensor<double, 2>, xt::xtensor<double, 4>>(sm);
+    add_sigeq_overloads<xt::xtensor<double, 1>, xt::xtensor<double, 3>>(sm);
+    add_sigeq_overloads<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
 
     // Material point: Elastic
 
@@ -191,11 +138,8 @@ PYBIND11_MODULE(GMatElastic, m)
         .def(py::init<double, double>(), "Linear elastic material point.", py::arg("K"), py::arg("G"))
 
         .def("K", &SM::Elastic::K, "Returns the bulk modulus.")
-
         .def("G", &SM::Elastic::G, "Returns the shear modulus.")
-
-        .def("setStrain", &SM::Elastic::setStrain<SM::Tensor2>, "Set current strain tensor.")
-
+        .def("setStrain", &SM::Elastic::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
         .def("Stress", &SM::Elastic::Stress, "Returns stress tensor, for last known strain.")
 
         .def(
@@ -217,12 +161,10 @@ PYBIND11_MODULE(GMatElastic, m)
     // Array
 
     py::class_<SM::Array<1>> array1d(sm, "Array1d");
-    add_common_members_array<1>(array1d);
-
     py::class_<SM::Array<2>> array2d(sm, "Array2d");
-    add_common_members_array<2>(array2d);
-
     py::class_<SM::Array<3>> array3d(sm, "Array3d");
-    add_common_members_array<3>(array3d);
 
+    construct_Array<SM::Array<1>>(array1d);
+    construct_Array<SM::Array<2>>(array2d);
+    construct_Array<SM::Array<3>>(array3d);
 }

@@ -7,18 +7,6 @@
 #ifndef GMATELASTIC_H
 #define GMATELASTIC_H
 
-#include <stdexcept>
-#include <limits>
-#include <math.h>
-#include <xtensor/xadapt.hpp>
-#include <xtensor/xfixed.hpp>
-#include <xtensor/xmath.hpp>
-#include <xtensor/xnoalias.hpp>
-#include <xtensor/xoperation.hpp>
-#include <xtensor/xsort.hpp>
-#include <xtensor/xtensor.hpp>
-#include <xtensor/xview.hpp>
-
 #ifdef GMATELASTIC_ENABLE_ASSERT
 
     #define GMATELASTIC_ASSERT(expr) GMATELASTIC_ASSERT_IMPL(expr, __FILE__, __LINE__)
