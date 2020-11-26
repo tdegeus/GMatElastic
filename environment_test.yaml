@@ -2,3 +2,4 @@ channels:
   - conda-forge
 dependencies:
   - catch2
+  - numpy
