@@ -56,4 +56,4 @@ jobs:
         python setup.py install
 
     - name: Run Python tests
-      run: python ./test/Cartesian2d.py
+      run: python ./test/Cartesian3d.py
