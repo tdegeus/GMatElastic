@@ -57,3 +57,15 @@ jobs:
 
     - name: Run Python tests
       run: python ./test/Cartesian3d.py
+
+    - name: Generate consistency data based on current commit
+      if: runner.os == 'Linux'
+      run: |
+        python test/compare_versions/Cartesian3d_generate.py
+        python test/compare_versions/Cartesian3d_check_main.py
+
+    - name: Check consistency with v0.1.0
+      if: runner.os == 'Linux'
+      run: |
+        conda install -c conda-forge python=3.8.5 python-gmatelastic=0.1.0
+        python test/compare_versions/Cartesian2d_check_v0.1.0.py

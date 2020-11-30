@@ -111,10 +111,12 @@ SECTION("Elastic - stress")
     double G = 45.6;
     double gamma = 0.02;
     double epsm = 0.12;
+    
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma, 0.0},
         {gamma, epsm, 0.0},
         {0.0, 0.0, epsm}};
+
     xt::xtensor<double, 2> Sig = {
         {3.0 * K * epsm, 2.0 * G * gamma, 0.0},
         {2.0 * G * gamma, 3.0 * K * epsm, 0.0},
@@ -150,10 +152,13 @@ SECTION("Array")
     double epsm = 0.12;
     size_t nelem = 3;
     size_t nip = 2;
+    size_t ndim = 3;
+    
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma, 0.0},
         {gamma, epsm, 0.0},
         {0.0, 0.0, epsm}};
+        
     xt::xtensor<double, 2> Sig = {
         {3.0 * K * epsm, 2.0 * G * gamma, 0.0},
         {2.0 * G * gamma, 3.0 * K * epsm, 0.0},
@@ -166,8 +171,8 @@ SECTION("Array")
         mat.setElastic(I, K, G);
     }
 
-    xt::xtensor<double, 4> eps = xt::empty<double>({nelem, nip, 3ul, 3ul});
-    xt::xtensor<double, 4> sig = xt::empty<double>({nelem, nip, 3ul, 3ul});
+    xt::xtensor<double, 4> eps = xt::empty<double>({nelem, nip, ndim, ndim});
+    xt::xtensor<double, 4> sig = xt::empty<double>({nelem, nip, ndim, ndim});
 
     for (size_t e = 0; e < nelem; ++e) {
         for (size_t q = 0; q < nip; ++q) {
@@ -180,6 +185,42 @@ SECTION("Array")
     mat.setStrain(eps);
 
     REQUIRE(xt::allclose(mat.Stress(), sig));
+}
+
+SECTION("Array - Model")
+{
+    double K = 12.3;
+    double G = 45.6;
+    double gamma = 0.02;
+    double epsm = 0.12;
+    size_t nelem = 3;
+    size_t nip = 2;
+    
+    xt::xtensor<double, 2> Eps = {
+        {epsm, gamma, 0.0},
+        {gamma, epsm, 0.0},
+        {0.0, 0.0, epsm}};
+        
+    xt::xtensor<double, 2> Sig = {
+        {3.0 * K * epsm, 2.0 * G * gamma, 0.0},
+        {2.0 * G * gamma, 3.0 * K * epsm, 0.0},
+        {0.0, 0.0, 3.0 * K * epsm}};
+
+    GM::Array<2> mat({nelem, nip});
+
+    {
+        xt::xtensor<size_t,2> I = xt::ones<size_t>({nelem, nip});
+        mat.setElastic(I, K, G);
+    }
+
+    for (size_t e = 0; e < nelem; ++e) {
+        for (size_t q = 0; q < nip; ++q) {
+            double fac = static_cast<double>((e + 1) * nip + (q + 1));
+            auto model = mat.getElastic({e, q});
+            model.setStrain(fac * Eps);
+            REQUIRE(xt::allclose(model.Stress(), fac * Sig_elas));
+        }
+    }
 }
 
 }

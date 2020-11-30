@@ -50,12 +50,13 @@ class Test_main(unittest.TestCase):
         nelem = 2
         nip = 2
         mat = GMat.Array2d([nelem, nip])
+        ndim = 3
 
         I = np.ones([nelem, nip], dtype='int')
         mat.setElastic(I, K, G)
 
-        eps = np.zeros((nelem, nip, 3, 3))
-        sig = np.zeros((nelem, nip, 3, 3))
+        eps = np.zeros((nelem, nip, ndim, ndim))
+        sig = np.zeros((nelem, nip, ndim, ndim))
 
         for e in range(nelem):
             for q in range(nip):

@@ -66,6 +66,13 @@ public:
     template <class T>
     void setStrainIterator(const T& begin); // presumes: contiguous + row-major & symmetric
 
+    // Read stored strain
+    template <class T>
+    void strain(T& Eps) const;
+
+    template <class T>
+    void strainIterator(const T& begin) const; // presumes: contiguous + row-major & symmetric
+
     // Stress (no allocation, overwrites "Sig" / writes to "begin")
     template <class T>
     void stress(T& Sig) const;
@@ -78,6 +85,7 @@ public:
     void tangent(T& C) const;
 
     // Auto-allocation
+    xt::xtensor<double, 2> Strain() const;
     xt::xtensor<double, 2> Stress() const;
     xt::xtensor<double, 4> Tangent() const;
 
@@ -145,13 +153,20 @@ public:
     // Set strain tensor, get the response
 
     void setStrain(const xt::xtensor<double, N + 2>& Eps);
+    void strain(xt::xtensor<double, N + 2>& Eps) const;
     void stress(xt::xtensor<double, N + 2>& Sig) const;
     void tangent(xt::xtensor<double, N + 4>& C) const;
 
     // Auto-allocation of the functions above
 
+    xt::xtensor<double, N + 2> Strain() const;
     xt::xtensor<double, N + 2> Stress() const;
     xt::xtensor<double, N + 4> Tangent() const;
+    
+    // Get copy or reference to the underlying model at on point
+
+    auto getElastic(const std::array<size_t, N>& index) const;
+    auto* refElastic(const std::array<size_t, N>& index);
 
 private:
     // Material vectors

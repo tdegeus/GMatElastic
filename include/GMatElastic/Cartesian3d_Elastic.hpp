@@ -52,6 +52,26 @@ inline void Elastic::setStrainIterator(const T& begin)
 }
 
 template <class T>
+inline void Elastic::strain(T& a) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(a, {3, 3}));
+    return this->strainIterator(a.begin());
+}
+
+template <class T>
+inline void Elastic::strainIterator(const T& begin) const
+{
+    std::copy(m_Eps.begin(), m_Eps.end(), begin);
+}
+
+inline xt::xtensor<double, 2> Elastic::Strain() const
+{
+    xt::xtensor<double, 2> ret = xt::empty<double>({3, 3});
+    this->strainIterator(ret.begin());
+    return ret;
+}
+
+template <class T>
 inline void Elastic::stress(T& a) const
 {
     GMATELASTIC_ASSERT(xt::has_shape(a, {3, 3}));

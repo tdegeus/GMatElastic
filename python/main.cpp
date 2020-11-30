@@ -44,12 +44,12 @@ auto construct_Array(T& self)
             py::arg("G"))
 
         .def("setStrain", &S::setStrain, "Set strain tensors.", py::arg("Eps"))
+        .def("Strain", &S::Strain, "Get strain tensors.")
         .def("Stress", &S::Stress, "Get stress tensors.")
         .def("Tangent", &S::Tangent, "Get stiffness tensors.")
+        .def("getElastic", &S::getElastic, "Returns underlying Elastic model.")
 
-        .def("__repr__", [](const S&) {
-            return "<GMatElastic.Cartesian3d.Array>";
-        });
+        .def("__repr__", [](const S&) { return "<GMatElastic.Cartesian3d.Array>"; });
 }
 
 template <class S, class T>
@@ -140,7 +140,8 @@ PYBIND11_MODULE(GMatElastic, m)
         .def("K", &SM::Elastic::K, "Returns the bulk modulus.")
         .def("G", &SM::Elastic::G, "Returns the shear modulus.")
         .def("setStrain", &SM::Elastic::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
-        .def("Stress", &SM::Elastic::Stress, "Returns stress tensor, for last known strain.")
+        .def("Stress", &SM::Elastic::Stress, "Returns stress tensor.")
+        .def("Strain", &SM::Elastic::Strain, "Returns strain tensor.")
 
         .def(
             "Tangent",
