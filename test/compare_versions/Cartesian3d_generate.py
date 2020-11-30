@@ -13,9 +13,10 @@ with h5py.File('Cartesian3d_random.hdf5', 'w') as data:
 
     mat = GMat.Array2d(shape)
 
-    I = np.ones(shape)
-    K = np.ones(n)
-    G = np.ones(n)
+    I = np.ones(shape).astype(np.int)
+    n = I.size
+    K = 12.3
+    G = 45.6
 
     data['/elastic/I'] = I
     data['/elastic/K'] = K
@@ -26,7 +27,7 @@ with h5py.File('Cartesian3d_random.hdf5', 'w') as data:
 
     for i in range(20):
 
-        GradU = 200 * np.random.random([nelem, nip, 2, 2])
+        GradU = 200 * np.random.random([nelem, nip, 3, 3])
 
         data['/random/{0:d}/GradU'.format(i)] = GradU
 
