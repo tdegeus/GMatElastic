@@ -34,6 +34,10 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [By hand](#by-hand)
     - [Using pkg-config](#using-pkg-config)
 - [References / Credits](#references--credits)
+- [Upgrading instructions](#upgrading-instructions)
+    - [Upgrading to >v0.2.*](#upgrading-to-v02)
+- [Change-log](#change-log)
+    - [v0.2.0](#v020)
 
 <!-- /MarkdownTOC -->
 
@@ -80,8 +84,8 @@ At the material point level to model is implemented in the class:
 
 +   `Elastic`: linear elastic material model.
 
-There is an `Array` class that allows you to combine 
-have a single API for a matrix of material points. 
+There is an `Array` class that allows you to
+have a single API for an array of material points. 
 
 >   Note that all strain tensors are presumed symmetric. 
 >   No checks are made to ensure this.
@@ -100,20 +104,20 @@ namespace GMat = GMatLinearElastic::Cartesian3d;
 int main()
 {
     // a single material point
-    GMat::Elastic elastic(K, G);
+    GMat::Elastic model(K, G);
     ...
     
     // set strain (follows e.g. from FEM discretisation)
     xt::xtensor<double, 2> Eps;
     ...
-    elastic.setStrain(Eps);
+    model.setStrain(Eps);
     ...
     
     // compute stress (including allocation of the result)
     xt::xtensor<double, 2> Sig = elastic.Stress();
     // OR compute stress without (re)allocating the results
     // in this case "Sig" has to be of the correct type and shape
-    elastic.stress(Sig); 
+    model.stress(Sig); 
     ...
 
     return 0;
@@ -131,7 +135,7 @@ int main()
 {
     size_t ndim = 3;
     
-    // a array, of shape [nelem, nip], of material points
+    // array, of shape [nelem, nip], of material points
     GMat::Array<2> array({nelem, nip});
 
     // set materials:
