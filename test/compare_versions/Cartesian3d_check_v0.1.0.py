@@ -1,17 +1,17 @@
 import h5py
 import numpy as np
-import GMatElastoPlasticQPot.Cartesian2d as GMat
+import GMatElastic.Cartesian3d as GMat
 import unittest
 
 class Test(unittest.TestCase):
 
     def test_main(self):
 
-        with h5py.File('Cartesian2d_random.hdf5', 'r') as data:
+        with h5py.File('Cartesian3d_random.hdf5', 'r') as data:
 
             shape = data['/shape'][...]
 
-            i = np.eye(2)
+            i = np.eye(3)
             I = np.einsum('xy,ij', np.ones(shape), i)
             I4 = np.einsum('xy,ijkl->xyijkl', np.ones(shape), np.einsum('il,jk', i, i))
             I4rt = np.einsum('xy,ijkl->xyijkl', np.ones(shape), np.einsum('ik,jl', i, i))
