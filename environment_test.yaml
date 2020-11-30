@@ -3,3 +3,4 @@ channels:
 dependencies:
   - catch2
   - numpy
+  - h5py
