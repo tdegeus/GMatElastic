@@ -111,7 +111,7 @@ SECTION("Elastic - stress")
     double G = 45.6;
     double gamma = 0.02;
     double epsm = 0.12;
-    
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma, 0.0},
         {gamma, epsm, 0.0},
@@ -153,12 +153,12 @@ SECTION("Array")
     size_t nelem = 3;
     size_t nip = 2;
     size_t ndim = 3;
-    
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma, 0.0},
         {gamma, epsm, 0.0},
         {0.0, 0.0, epsm}};
-        
+
     xt::xtensor<double, 2> Sig = {
         {3.0 * K * epsm, 2.0 * G * gamma, 0.0},
         {2.0 * G * gamma, 3.0 * K * epsm, 0.0},
@@ -195,12 +195,12 @@ SECTION("Array - Model")
     double epsm = 0.12;
     size_t nelem = 3;
     size_t nip = 2;
-    
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma, 0.0},
         {gamma, epsm, 0.0},
         {0.0, 0.0, epsm}};
-        
+
     xt::xtensor<double, 2> Sig = {
         {3.0 * K * epsm, 2.0 * G * gamma, 0.0},
         {2.0 * G * gamma, 3.0 * K * epsm, 0.0},
@@ -218,7 +218,7 @@ SECTION("Array - Model")
             double fac = static_cast<double>((e + 1) * nip + (q + 1));
             auto model = mat.getElastic({e, q});
             model.setStrain(fac * Eps);
-            REQUIRE(xt::allclose(model.Stress(), fac * Sig_elas));
+            REQUIRE(xt::allclose(model.Stress(), fac * Sig));
         }
     }
 }
