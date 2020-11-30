@@ -107,7 +107,7 @@ inline void Array<N>::checkAllSet()
 template <size_t N>
 inline void Array<N>::setElastic(const xt::xtensor<size_t, N>& I, double K, double G)
 {
-    GMATELASTIC_ASSERT(m_type.shape() == I.shape());
+    GMATELASTIC_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTIC_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
     GMATELASTIC_ASSERT(
         xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
