@@ -23,7 +23,6 @@ with h5py.File('Cartesian3d_random.hdf5', 'w') as data:
     data['/elastic/G'] = G
 
     mat.setElastic(I, K, G)
-    mat.check()
 
     for i in range(20):
 
