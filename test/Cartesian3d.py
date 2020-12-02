@@ -47,7 +47,7 @@ class Test_main(unittest.TestCase):
              [2.0 * G *gamma, 3.0 * K * epsm, 0.0],
              [0.0, 0.0, 3.0 * K * epsm]])
 
-        nelem = 2
+        nelem = 3
         nip = 2
         mat = GMat.Array2d([nelem, nip])
         ndim = 3

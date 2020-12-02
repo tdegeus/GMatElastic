@@ -18,9 +18,9 @@ with h5py.File('Cartesian3d_random.hdf5', 'w') as data:
     K = 12.3
     G = 45.6
 
-    data['/elastic/I'] = I
-    data['/elastic/K'] = K
-    data['/elastic/G'] = G
+    data['/model/I'] = I
+    data['/model/K'] = K
+    data['/model/G'] = G
 
     mat.setElastic(I, K, G)
 

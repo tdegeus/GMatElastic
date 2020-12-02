@@ -11,9 +11,9 @@ class Test(unittest.TestCase):
 
             mat = GMat.Array2d(data['/shape'][...])
 
-            I = data['/elastic/I'][...]
-            K = data['/elastic/K'][...]
-            G = data['/elastic/G'][...]
+            I = data['/model/I'][...]
+            K = data['/model/K'][...]
+            G = data['/model/G'][...]
 
             mat.setElastic(I, K, G)
 
