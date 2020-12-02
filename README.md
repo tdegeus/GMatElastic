@@ -376,11 +376,21 @@ This requires the following changes:
     -   `Matrix` to `Array2d` in Python. 
         Note that `Array1d`, `Array3d`, are also available.
 
+*   `Array<rank>.check` -> 
+    ```cpp
+    if (xt::any(xt::equal(array.type(), Type::Unset))) {
+        throw std::runtime_error("Please set all points");
+    }
+    ```
+    Note however that it is no longer required to set all points, 
+    unset points are filled-up with zeros.
+
 *   Strain is now stored as a member. 
     Functions like `stress` now return the state based on the last specified strain, 
     specified using `setStrain(Esp)`. This leads to the following changes:
     - `stress`: no argument.
     - `tangent`: no argument, single return value (no longer returns stress).
+
 # Change-log
 
 ## v0.2.0
@@ -392,6 +402,9 @@ This requires the following changes:
     -   `Matrix` to `Array<2>` in C++.
     -   `Matrix` to `Array2d` in Python. 
         Note that `Array1d`, `Array3d`, are also available.
+
+*   `Array` now sets zeros for all `Type::Unset` points. 
+    The function `check` is deprecated accordingly.
 
 *   Strain is now stored as a member. 
     Functions like `stress` now return the state based on the last specified strain, 
