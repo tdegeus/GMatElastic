@@ -29,10 +29,10 @@ inline double Elastic::G() const
 template <class T>
 inline void Elastic::setStrainIterator(const T* arg)
 {
-    using namespace GMatTensor::Cartesian3d::pointer;
+    namespace GT = GMatTensor::Cartesian3d::pointer;
     std::copy(arg, arg + 9, m_Eps.begin());
 
-    double epsm = trace(&m_Eps[0]) / 3.0;
+    double epsm = GT::trace(&m_Eps[0]) / 3.0;
 
     m_Sig[0] = (3.0 * m_K - 2.0 * m_G) * epsm + 2.0 * m_G * m_Eps[0];
     m_Sig[1] = 2.0 * m_G * m_Eps[1];
