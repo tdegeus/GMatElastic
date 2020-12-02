@@ -33,7 +33,7 @@ using GMatTensor::Cartesian3d::Deviatoric;
 // Equivalent strain
 
 template <class T, class U>
-inline void epseq(const T& A, U& B);
+inline void epseq(const T& A, U& ret);
 
 template <class T>
 inline auto Epseq(const T& A);
@@ -41,7 +41,7 @@ inline auto Epseq(const T& A);
 // Equivalent stress
 
 template <class T, class U>
-inline void sigeq(const T& A, U& B);
+inline void sigeq(const T& A, U& ret);
 
 template <class T>
 inline auto Sigeq(const T& A);
@@ -51,47 +51,29 @@ inline auto Sigeq(const T& A);
 class Elastic
 {
 public:
-    // Constructors
     Elastic() = default;
     Elastic(double K, double G);
 
-    // Parameters
     double K() const;
     double G() const;
 
-    // Set strain
-    template <class T>
-    void setStrain(const T& Eps);
+    template <class T> void setStrain(const T& arg);
+    template <class T> void strain(T& ret) const;
+    template <class T> void stress(T& ret) const;
+    template <class T> void tangent(T& ret) const;
 
-    template <class T>
-    void setStrainIterator(const T& begin); // presumes: contiguous + row-major & symmetric
+    template <class T> void setStrainIterator(const T* arg);
+    template <class T> void strainIterator(T* ret) const;
+    template <class T> void stressIterator(T* ret) const;
+    template <class T> void tangentIterator(T* ret) const;
 
-    // Read stored strain
-    template <class T>
-    void strain(T& Eps) const;
-
-    template <class T>
-    void strainIterator(const T& begin) const; // presumes: contiguous + row-major & symmetric
-
-    // Stress (no allocation, overwrites "Sig" / writes to "begin")
-    template <class T>
-    void stress(T& Sig) const;
-
-    template <class T>
-    void stressIterator(const T& begin) const; // presumes: contiguous + row-major
-
-    // Tangent (no allocation, overwrites "C")
-    template <class T>
-    void tangent(T& C) const;
-
-    // Auto-allocation
     xt::xtensor<double, 2> Strain() const;
     xt::xtensor<double, 2> Stress() const;
     xt::xtensor<double, 4> Tangent() const;
 
 private:
-    double m_K;                  // bulk modulus
-    double m_G;                  // shear modulus
+    double m_K; // bulk modulus
+    double m_G; // shear modulus
     std::array<double, 9> m_Eps; // strain tensor [xx, xy, xz, yx, yy, yz, zx, zy, zz]
     std::array<double, 9> m_Sig; // stress tensor [xx, xy, xz, yx, yy, yz, zx, zy, zz]
 };
@@ -119,18 +101,9 @@ public:
     Array(const std::array<size_t, N>& shape);
     Array(const std::array<size_t, N>& shape, double K, double G);
 
-    // Overloaded methods
-
-    /*
-    std::array<size_t, N> shape() const;
-
-    xt::xtensor<double, N + 2> I2() const;
-    xt::xtensor<double, N + 4> II() const;
-    xt::xtensor<double, N + 4> I4() const;
-    xt::xtensor<double, N + 4> I4rt() const;
-    xt::xtensor<double, N + 4> I4s() const;
-    xt::xtensor<double, N + 4> I4d() const;
-    */
+    // Overloaded methods:
+    // - "shape"
+    // - unit tensors: "I2", "II", "I4", "I4rt", "I4s", "I4d"
 
     // Type
 
@@ -142,27 +115,23 @@ public:
     xt::xtensor<double, N> K() const;
     xt::xtensor<double, N> G() const;
 
-    // Check that a type has been set everywhere (throws if unset points are found)
-
-    void check() const;
-
     // Set parameters for a batch of points
 
     void setElastic(const xt::xtensor<size_t, N>& I, double K, double G);
 
     // Set strain tensor, get the response
 
-    void setStrain(const xt::xtensor<double, N + 2>& Eps);
-    void strain(xt::xtensor<double, N + 2>& Eps) const;
-    void stress(xt::xtensor<double, N + 2>& Sig) const;
-    void tangent(xt::xtensor<double, N + 4>& C) const;
+    void setStrain(const xt::xtensor<double, N + 2>& arg);
+    void strain(xt::xtensor<double, N + 2>& ret) const;
+    void stress(xt::xtensor<double, N + 2>& ret) const;
+    void tangent(xt::xtensor<double, N + 4>& ret) const;
 
     // Auto-allocation of the functions above
 
     xt::xtensor<double, N + 2> Strain() const;
     xt::xtensor<double, N + 2> Stress() const;
     xt::xtensor<double, N + 4> Tangent() const;
-    
+
     // Get copy or reference to the underlying model at on point
 
     auto getElastic(const std::array<size_t, N>& index) const;
@@ -184,10 +153,6 @@ private:
     using GMatTensor::Cartesian3d::Array<N>::m_shape;
     using GMatTensor::Cartesian3d::Array<N>::m_shape_tensor2;
     using GMatTensor::Cartesian3d::Array<N>::m_shape_tensor4;
-
-    // Internal check
-    bool m_allSet = false; // true if all points have a material assigned
-    void checkAllSet(); // check if all points have a material assigned (modifies "m_allSet")
 };
 
 } // namespace Cartesian3d

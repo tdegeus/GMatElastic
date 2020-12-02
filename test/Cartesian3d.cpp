@@ -217,7 +217,7 @@ SECTION("Array - Model")
         for (size_t q = 0; q < nip; ++q) {
             double fac = static_cast<double>((e + 1) * nip + (q + 1));
             auto model = mat.getElastic({e, q});
-            model.setStrain(fac * Eps);
+            model.setStrain(xt::eval(fac * Eps));
             REQUIRE(xt::allclose(model.Stress(), fac * Sig));
         }
     }

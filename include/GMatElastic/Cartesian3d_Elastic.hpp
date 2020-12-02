@@ -27,18 +27,12 @@ inline double Elastic::G() const
 }
 
 template <class T>
-inline void Elastic::setStrain(const T& a)
+inline void Elastic::setStrainIterator(const T* arg)
 {
-    GMATELASTIC_ASSERT(xt::has_shape(a, {3, 3}));
-    return this->setStrainIterator(a.cbegin());
-}
+    using namespace GMatTensor::Cartesian3d::pointer;
+    std::copy(arg, arg + 9, m_Eps.begin());
 
-template <class T>
-inline void Elastic::setStrainIterator(const T& begin)
-{
-    std::copy(begin, begin + 9, m_Eps.begin());
-
-    double epsm = GMatTensor::Cartesian3d::pointer::trace(&m_Eps[0]) / 3.0;
+    double epsm = trace(&m_Eps[0]) / 3.0;
 
     m_Sig[0] = (3.0 * m_K - 2.0 * m_G) * epsm + 2.0 * m_G * m_Eps[0];
     m_Sig[1] = 2.0 * m_G * m_Eps[1];
@@ -52,57 +46,72 @@ inline void Elastic::setStrainIterator(const T& begin)
 }
 
 template <class T>
-inline void Elastic::strain(T& a) const
+inline void Elastic::strainIterator(T* ret) const
 {
-    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(a, {3, 3}));
-    return this->strainIterator(a.begin());
+    std::copy(m_Eps.begin(), m_Eps.end(), ret);
 }
 
 template <class T>
-inline void Elastic::strainIterator(const T& begin) const
+inline void Elastic::stressIterator(T* ret) const
 {
-    std::copy(m_Eps.begin(), m_Eps.end(), begin);
+    std::copy(m_Sig.begin(), m_Sig.end(), ret);
 }
 
-inline xt::xtensor<double, 2> Elastic::Strain() const
+template <class T>
+inline void Elastic::tangentIterator(T* ret) const
 {
-    xt::xtensor<double, 2> ret = xt::empty<double>({3, 3});
-    this->strainIterator(ret.begin());
-    return ret;
+    auto II = Cartesian3d::II();
+    auto I4d = Cartesian3d::I4d();
+    auto C = m_K * II + 2.0 * m_G * I4d;
+    std::copy(C.cbegin(), C.cend(), ret);
+}
+
+template <class T>
+inline void Elastic::setStrain(const T& a)
+{
+    GMATELASTIC_ASSERT(xt::has_shape(a, {3, 3}));
+    return this->setStrainIterator(a.data());
+}
+
+template <class T>
+inline void Elastic::strain(T& a) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(a, {3, 3}));
+    return this->strainIterator(a.data());
 }
 
 template <class T>
 inline void Elastic::stress(T& a) const
 {
     GMATELASTIC_ASSERT(xt::has_shape(a, {3, 3}));
-    return this->stressIterator(a.begin());
+    return this->stressIterator(a.data());
 }
 
 template <class T>
-inline void Elastic::stressIterator(const T& begin) const
+inline void Elastic::tangent(T& a) const
 {
-    std::copy(m_Sig.begin(), m_Sig.end(), begin);
+    GMATELASTIC_ASSERT(xt::has_shape(a, {3, 3, 3, 3}));
+    return this->stressIterator(a.data());
+}
+
+inline xt::xtensor<double, 2> Elastic::Strain() const
+{
+    xt::xtensor<double, 2> ret = xt::empty<double>({3, 3});
+    this->strainIterator(ret.data());
+    return ret;
 }
 
 inline xt::xtensor<double, 2> Elastic::Stress() const
 {
     xt::xtensor<double, 2> ret = xt::empty<double>({3, 3});
-    this->stressIterator(ret.begin());
+    this->stressIterator(ret.data());
     return ret;
-}
-
-template <class T>
-inline void Elastic::tangent(T& C) const
-{
-    auto II = Cartesian3d::II();
-    auto I4d = Cartesian3d::I4d();
-    xt::noalias(C) = m_K * II + 2.0 * m_G * I4d;
 }
 
 inline xt::xtensor<double, 4> Elastic::Tangent() const
 {
     xt::xtensor<double, 4> ret = xt::empty<double>({3, 3, 3, 3});
-    this->tangent(ret);
+    this->tangentIterator(ret.data());
     return ret;
 }
 

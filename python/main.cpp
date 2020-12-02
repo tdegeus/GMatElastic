@@ -33,7 +33,6 @@ auto construct_Array(T& self)
         .def("G", &S::G, "Array with shear moduli.")
         .def("type", &S::type, "Array with material types.")
         .def("isElastic", &S::isElastic, "Boolean-matrix: true for Elastic.")
-        .def("check", &S::check, "Throws if any unset point is found.")
 
         .def(
             "setElastic",
@@ -139,14 +138,10 @@ PYBIND11_MODULE(GMatElastic, m)
 
         .def("K", &SM::Elastic::K, "Returns the bulk modulus.")
         .def("G", &SM::Elastic::G, "Returns the shear modulus.")
-        .def("setStrain", &SM::Elastic::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
-        .def("Stress", &SM::Elastic::Stress, "Returns stress tensor.")
+        .def("setStrain", &SM::Elastic::setStrain<xt::xtensor<double, 2>>, "Set strain tensor.")
         .def("Strain", &SM::Elastic::Strain, "Returns strain tensor.")
-
-        .def(
-            "Tangent",
-            &SM::Elastic::Tangent,
-            "Returns stress and tangent stiffness tensors, for last known strain.")
+        .def("Stress", &SM::Elastic::Stress, "Returns stress tensor.")
+        .def("Tangent", &SM::Elastic::Tangent, "Returns tangent stiffness.")
 
         .def("__repr__", [](const SM::Elastic&) { return "<GMatElastic.Cartesian3d.Elastic>"; });
 
