@@ -27,7 +27,7 @@ inline double Elastic::G() const
 }
 
 template <class T>
-inline void Elastic::setStrainIterator(const T* arg)
+inline void Elastic::setStrainPtr(const T* arg)
 {
     namespace GT = GMatTensor::Cartesian3d::pointer;
     std::copy(arg, arg + 9, m_Eps.begin());
@@ -46,19 +46,19 @@ inline void Elastic::setStrainIterator(const T* arg)
 }
 
 template <class T>
-inline void Elastic::strainIterator(T* ret) const
+inline void Elastic::strainPtr(T* ret) const
 {
     std::copy(m_Eps.begin(), m_Eps.end(), ret);
 }
 
 template <class T>
-inline void Elastic::stressIterator(T* ret) const
+inline void Elastic::stressPtr(T* ret) const
 {
     std::copy(m_Sig.begin(), m_Sig.end(), ret);
 }
 
 template <class T>
-inline void Elastic::tangentIterator(T* ret) const
+inline void Elastic::tangentPtr(T* ret) const
 {
     auto II = Cartesian3d::II();
     auto I4d = Cartesian3d::I4d();
@@ -67,51 +67,51 @@ inline void Elastic::tangentIterator(T* ret) const
 }
 
 template <class T>
-inline void Elastic::setStrain(const T& a)
+inline void Elastic::setStrain(const T& arg)
 {
-    GMATELASTIC_ASSERT(xt::has_shape(a, {3, 3}));
-    return this->setStrainIterator(a.data());
+    GMATELASTIC_ASSERT(xt::has_shape(arg, {3, 3}));
+    return this->setStrainPtr(arg.data());
 }
 
 template <class T>
-inline void Elastic::strain(T& a) const
+inline void Elastic::strain(T& ret) const
 {
-    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(a, {3, 3}));
-    return this->strainIterator(a.data());
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, {3, 3}));
+    return this->strainPtr(ret.data());
 }
 
 template <class T>
-inline void Elastic::stress(T& a) const
+inline void Elastic::stress(T& ret) const
 {
-    GMATELASTIC_ASSERT(xt::has_shape(a, {3, 3}));
-    return this->stressIterator(a.data());
+    GMATELASTIC_ASSERT(xt::has_shape(ret, {3, 3}));
+    return this->stressPtr(ret.data());
 }
 
 template <class T>
-inline void Elastic::tangent(T& a) const
+inline void Elastic::tangent(T& ret) const
 {
-    GMATELASTIC_ASSERT(xt::has_shape(a, {3, 3, 3, 3}));
-    return this->stressIterator(a.data());
+    GMATELASTIC_ASSERT(xt::has_shape(ret, {3, 3, 3, 3}));
+    return this->tangentPtr(ret.data());
 }
 
 inline xt::xtensor<double, 2> Elastic::Strain() const
 {
     xt::xtensor<double, 2> ret = xt::empty<double>({3, 3});
-    this->strainIterator(ret.data());
+    this->strainPtr(ret.data());
     return ret;
 }
 
 inline xt::xtensor<double, 2> Elastic::Stress() const
 {
     xt::xtensor<double, 2> ret = xt::empty<double>({3, 3});
-    this->stressIterator(ret.data());
+    this->stressPtr(ret.data());
     return ret;
 }
 
 inline xt::xtensor<double, 4> Elastic::Tangent() const
 {
     xt::xtensor<double, 4> ret = xt::empty<double>({3, 3, 3, 3});
-    this->tangentIterator(ret.data());
+    this->tangentPtr(ret.data());
     return ret;
 }
 

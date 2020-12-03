@@ -103,9 +103,9 @@ inline void Array<N>::setElastic(const xt::xtensor<size_t, N>& I, double K, doub
 }
 
 template <size_t N>
-inline void Array<N>::setStrain(const xt::xtensor<double, N + 2>& A)
+inline void Array<N>::setStrain(const xt::xtensor<double, N + 2>& arg)
 {
-    GMATELASTIC_ASSERT(xt::has_shape(A, m_shape_tensor2));
+    GMATELASTIC_ASSERT(xt::has_shape(arg, m_shape_tensor2));
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
@@ -113,61 +113,61 @@ inline void Array<N>::setStrain(const xt::xtensor<double, N + 2>& A)
         case Type::Unset:
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].setStrainIterator(&A.data()[i * m_stride_tensor2]);
+            m_Elastic[m_index.data()[i]].setStrainPtr(&arg.data()[i * m_stride_tensor2]);
             break;
         }
     }
 }
 
 template <size_t N>
-inline void Array<N>::strain(xt::xtensor<double, N + 2>& A) const
+inline void Array<N>::strain(xt::xtensor<double, N + 2>& ret) const
 {
-    GMATELASTIC_ASSERT(xt::has_shape(A, m_shape_tensor2));
+    GMATELASTIC_ASSERT(xt::has_shape(ret, m_shape_tensor2));
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Unset:
-            GMatTensor::Cartesian3d::pointer::O2(&A.data()[i * m_stride_tensor2]);
+            GMatTensor::Cartesian3d::pointer::O2(&ret.data()[i * m_stride_tensor2]);
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].strainIterator(&A.data()[i * m_stride_tensor2]);
+            m_Elastic[m_index.data()[i]].strainPtr(&ret.data()[i * m_stride_tensor2]);
             break;
         }
     }
 }
 
 template <size_t N>
-inline void Array<N>::stress(xt::xtensor<double, N + 2>& A) const
+inline void Array<N>::stress(xt::xtensor<double, N + 2>& ret) const
 {
-    GMATELASTIC_ASSERT(xt::has_shape(A, m_shape_tensor2));
+    GMATELASTIC_ASSERT(xt::has_shape(ret, m_shape_tensor2));
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Unset:
-            GMatTensor::Cartesian3d::pointer::O2(&A.data()[i * m_stride_tensor2]);
+            GMatTensor::Cartesian3d::pointer::O2(&ret.data()[i * m_stride_tensor2]);
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].stressIterator(&A.data()[i * m_stride_tensor2]);
+            m_Elastic[m_index.data()[i]].stressPtr(&ret.data()[i * m_stride_tensor2]);
             break;
         }
     }
 }
 
 template <size_t N>
-inline void Array<N>::tangent(xt::xtensor<double, N + 4>& A) const
+inline void Array<N>::tangent(xt::xtensor<double, N + 4>& ret) const
 {
-    GMATELASTIC_ASSERT(xt::has_shape(A, m_shape_tensor4));
+    GMATELASTIC_ASSERT(xt::has_shape(ret, m_shape_tensor4));
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Unset:
-            GMatTensor::Cartesian3d::pointer::O4(&A.data()[i * m_stride_tensor4]);
+            GMatTensor::Cartesian3d::pointer::O4(&ret.data()[i * m_stride_tensor4]);
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].tangentIterator(&A.data()[i * m_stride_tensor4]);
+            m_Elastic[m_index.data()[i]].tangentPtr(&ret.data()[i * m_stride_tensor4]);
             break;
         }
     }
