@@ -56,6 +56,7 @@ public:
 
     double K() const;
     double G() const;
+    double energy() const;
 
     template <class T> void setStrain(const T& arg);
     template <class T> void strain(T& ret) const;

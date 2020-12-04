@@ -40,17 +40,8 @@ find_dependency(GMatTensor)
 
 if(NOT TARGET GMatElastic::compiler_warnings)
     add_library(GMatElastic::compiler_warnings INTERFACE IMPORTED)
-    if(MSVC)
-        set_property(
-            TARGET GMatElastic::compiler_warnings
-            PROPERTY INTERFACE_COMPILE_OPTIONS
-            /W4)
-    else()
-        set_property(
-            TARGET GMatElastic::compiler_warnings
-            PROPERTY INTERFACE_COMPILE_OPTIONS
-            -Wall -Wextra -pedantic -Wno-unknown-pragmas)
-    endif()
+    target_link_libraries(GMatElastic::compiler_warnings INTERFACE
+        GMatTensor::compiler_warnings)
 endif()
 
 # Define support target "GMatElastic::assert"
