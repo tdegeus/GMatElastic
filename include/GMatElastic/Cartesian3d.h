@@ -16,6 +16,8 @@ namespace Cartesian3d {
 
 // Unit tensors
 
+using GMatTensor::Cartesian3d::O2;
+using GMatTensor::Cartesian3d::O4;
 using GMatTensor::Cartesian3d::I2;
 using GMatTensor::Cartesian3d::II;
 using GMatTensor::Cartesian3d::I4;
@@ -76,7 +78,7 @@ private:
     double m_K; // bulk modulus
     double m_G; // shear modulus
     std::array<double, 9> m_Eps; // strain tensor [xx, xy, xz, yx, yy, yz, zx, zy, zz]
-    std::array<double, 9> m_Sig; // stress tensor [xx, xy, xz, yx, yy, yz, zx, zy, zz]
+    std::array<double, 9> m_Sig; // stress tensor ,,
 };
 
 // Material identifier

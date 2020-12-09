@@ -30,7 +30,7 @@ inline double Elastic::energy() const
 {
     namespace GT = GMatTensor::Cartesian3d::pointer;
     std::array<double, 9> Epsd;
-    double epsm = GT::hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
+    double epsm = GT::Hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
     double epsd = std::sqrt(0.5 * GT::A2_ddot_B2(&Epsd[0], &Epsd[0]));
     auto U = 3.0 * m_K * std::pow(epsm, 2.0);
     auto V = 2.0 * m_G * std::pow(epsd, 2.0);
@@ -43,7 +43,7 @@ inline void Elastic::setStrainPtr(const T* arg)
     namespace GT = GMatTensor::Cartesian3d::pointer;
     std::copy(arg, arg + 9, m_Eps.begin());
 
-    double epsm = GT::trace(&m_Eps[0]) / 3.0;
+    double epsm = GT::Hydrostatic(&m_Eps[0]);
 
     m_Sig[0] = (3.0 * m_K - 2.0 * m_G) * epsm + 2.0 * m_G * m_Eps[0];
     m_Sig[1] = 2.0 * m_G * m_Eps[1];

@@ -15,27 +15,27 @@ namespace Cartesian3d {
 template <class T, class U>
 inline void epseq(const T& A, U& B)
 {
-    GMatTensor::Cartesian3d::equivalent_deviatoric(A, B);
+    GMatTensor::Cartesian3d::norm_deviatoric(A, B);
     B *= std::sqrt(2.0 / 3.0);
 }
 
 template <class T>
 inline auto Epseq(const T& A)
 {
-    return xt::eval(std::sqrt(2.0 / 3.0) * GMatTensor::Cartesian3d::Equivalent_deviatoric(A));
+    return xt::eval(std::sqrt(2.0 / 3.0) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
 }
 
 template <class T, class U>
 inline void sigeq(const T& A, U& B)
 {
-    GMatTensor::Cartesian3d::equivalent_deviatoric(A, B);
+    GMatTensor::Cartesian3d::norm_deviatoric(A, B);
     B *= std::sqrt(1.5);
 }
 
 template <class T>
 inline auto Sigeq(const T& A)
 {
-    return xt::eval(std::sqrt(1.5) * GMatTensor::Cartesian3d::Equivalent_deviatoric(A));
+    return xt::eval(std::sqrt(1.5) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
 }
 
 } // namespace Cartesian3d
