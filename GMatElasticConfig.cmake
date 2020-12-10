@@ -34,22 +34,14 @@ get_target_property(
 # Find dependencies
 
 find_dependency(xtensor)
+find_dependency(GMatTensor)
 
 # Define support target "GMatElastic::compiler_warnings"
 
 if(NOT TARGET GMatElastic::compiler_warnings)
     add_library(GMatElastic::compiler_warnings INTERFACE IMPORTED)
-    if(MSVC)
-        set_property(
-            TARGET GMatElastic::compiler_warnings
-            PROPERTY INTERFACE_COMPILE_OPTIONS
-            /W4)
-    else()
-        set_property(
-            TARGET GMatElastic::compiler_warnings
-            PROPERTY INTERFACE_COMPILE_OPTIONS
-            -Wall -Wextra -pedantic -Wno-unknown-pragmas)
-    endif()
+    target_link_libraries(GMatElastic::compiler_warnings INTERFACE
+        GMatTensor::compiler_warnings)
 endif()
 
 # Define support target "GMatElastic::assert"
@@ -69,5 +61,6 @@ if(NOT TARGET GMatElastic::debug)
     set_property(
         TARGET GMatElastic::debug
         PROPERTY INTERFACE_COMPILE_DEFINITIONS
-        XTENSOR_ENABLE_ASSERT GMATELASTIC_ENABLE_ASSERT)
+        XTENSOR_ENABLE_ASSERT
+        GMATELASTIC_ENABLE_ASSERT)
 endif()

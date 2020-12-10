@@ -26,40 +26,104 @@ inline double Elastic::G() const
     return m_G;
 }
 
+inline double Elastic::energy() const
+{
+    namespace GT = GMatTensor::Cartesian3d::pointer;
+    std::array<double, 9> Epsd;
+    double epsm = GT::Hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
+    double epsd = std::sqrt(0.5 * GT::A2s_ddot_B2s(&Epsd[0], &Epsd[0]));
+    double U = 3.0 * m_K * std::pow(epsm, 2.0);
+    double V = 2.0 * m_G * std::pow(epsd, 2.0);
+    return U + V;
+}
+
 template <class T>
-inline void Elastic::stress(const Tensor2& Eps, T&& Sig) const
+inline void Elastic::setStrainPtr(const T* arg)
 {
-    auto I = Cartesian3d::I2();
-    auto epsm = trace(Eps) / 3.0;
-    auto Epsd = Eps - epsm * I;
-    xt::noalias(Sig) = 3.0 * m_K * epsm * I + 2.0 * m_G * Epsd;
+    namespace GT = GMatTensor::Cartesian3d::pointer;
+    std::copy(arg, arg + 9, m_Eps.begin());
+
+    double epsm = GT::Hydrostatic(&m_Eps[0]);
+
+    m_Sig[0] = (3.0 * m_K - 2.0 * m_G) * epsm + 2.0 * m_G * m_Eps[0];
+    m_Sig[1] = 2.0 * m_G * m_Eps[1];
+    m_Sig[2] = 2.0 * m_G * m_Eps[2];
+    m_Sig[3] = 2.0 * m_G * m_Eps[3];
+    m_Sig[4] = (3.0 * m_K - 2.0 * m_G) * epsm + 2.0 * m_G * m_Eps[4];
+    m_Sig[5] = 2.0 * m_G * m_Eps[5];
+    m_Sig[6] = 2.0 * m_G * m_Eps[6];
+    m_Sig[7] = 2.0 * m_G * m_Eps[7];
+    m_Sig[8] = (3.0 * m_K - 2.0 * m_G) * epsm + 2.0 * m_G * m_Eps[8];
 }
 
-inline Tensor2 Elastic::Stress(const Tensor2& Eps) const
+template <class T>
+inline void Elastic::strainPtr(T* ret) const
 {
-    Tensor2 Sig;
-    this->stress(Eps, Sig);
-    return Sig;
+    std::copy(m_Eps.begin(), m_Eps.end(), ret);
 }
 
-template <class T, class S>
-inline void Elastic::tangent(const Tensor2& Eps, T&& Sig, S&& C) const
+template <class T>
+inline void Elastic::stressPtr(T* ret) const
 {
-    auto I = Cartesian3d::I2();
+    std::copy(m_Sig.begin(), m_Sig.end(), ret);
+}
+
+template <class T>
+inline void Elastic::tangentPtr(T* ret) const
+{
     auto II = Cartesian3d::II();
     auto I4d = Cartesian3d::I4d();
-    auto epsm = trace(Eps) / 3.0;
-    auto Epsd = Eps - epsm * I;
-    xt::noalias(Sig) = 3.0 * m_K * epsm * I + 2.0 * m_G * Epsd;
-    xt::noalias(C) = m_K * II + 2.0 * m_G * I4d;
+    auto C = m_K * II + 2.0 * m_G * I4d;
+    std::copy(C.cbegin(), C.cend(), ret);
 }
 
-inline std::tuple<Tensor2, Tensor4> Elastic::Tangent(const Tensor2& Eps) const
+template <class T>
+inline void Elastic::setStrain(const T& arg)
 {
-    Tensor2 Sig;
-    Tensor4 C;
-    this->tangent(Eps, Sig, C);
-    return std::make_tuple(Sig, C);
+    GMATELASTIC_ASSERT(xt::has_shape(arg, {3, 3}));
+    return this->setStrainPtr(arg.data());
+}
+
+template <class T>
+inline void Elastic::strain(T& ret) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, {3, 3}));
+    return this->strainPtr(ret.data());
+}
+
+template <class T>
+inline void Elastic::stress(T& ret) const
+{
+    GMATELASTIC_ASSERT(xt::has_shape(ret, {3, 3}));
+    return this->stressPtr(ret.data());
+}
+
+template <class T>
+inline void Elastic::tangent(T& ret) const
+{
+    GMATELASTIC_ASSERT(xt::has_shape(ret, {3, 3, 3, 3}));
+    return this->tangentPtr(ret.data());
+}
+
+inline xt::xtensor<double, 2> Elastic::Strain() const
+{
+    xt::xtensor<double, 2> ret = xt::empty<double>({3, 3});
+    this->strainPtr(ret.data());
+    return ret;
+}
+
+inline xt::xtensor<double, 2> Elastic::Stress() const
+{
+    xt::xtensor<double, 2> ret = xt::empty<double>({3, 3});
+    this->stressPtr(ret.data());
+    return ret;
+}
+
+inline xt::xtensor<double, 4> Elastic::Tangent() const
+{
+    xt::xtensor<double, 4> ret = xt::empty<double>({3, 3, 3, 3});
+    this->tangentPtr(ret.data());
+    return ret;
 }
 
 } // namespace Cartesian3d
