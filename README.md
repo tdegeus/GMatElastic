@@ -454,3 +454,6 @@ This requires the following changes:
     specified using `setStrain(Esp)`. This leads to the following changes:
     - `stress`: no argument.
     - `tangent`: no argument, single return value (no longer returns stress).
+
+*   Tensor operations are now provided centrally in the GMat eco-system, 
+    by GMatTensor
