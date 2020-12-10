@@ -1,29 +1,11 @@
 /*
 
-(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/GMatElastic
+(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastic
 
 */
 
 #ifndef GMATELASTIC_H
 #define GMATELASTIC_H
-
-#include <tuple>
-#include <stdexcept>
-#include <limits>
-#include <math.h>
-#include <iostream>
-#include <vector>
-#include <tuple>
-#include <xtensor/xarray.hpp>
-#include <xtensor/xtensor.hpp>
-#include <xtensor/xnoalias.hpp>
-#include <xtensor/xfixed.hpp>
-#include <xtensor/xadapt.hpp>
-#include <xtensor/xview.hpp>
-#include <xtensor/xio.hpp>
-#include <xtensor/xoperation.hpp>
-#include <xtensor/xsort.hpp>
-#include <xtensor/xmath.hpp>
 
 #ifdef GMATELASTIC_ENABLE_ASSERT
 
@@ -42,7 +24,7 @@
 #endif
 
 #define GMATELASTIC_VERSION_MAJOR 0
-#define GMATELASTIC_VERSION_MINOR 1
+#define GMATELASTIC_VERSION_MINOR 2
 #define GMATELASTIC_VERSION_PATCH 0
 
 #define GMATELASTIC_VERSION_AT_LEAST(x, y, z) \
