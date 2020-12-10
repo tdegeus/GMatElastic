@@ -1,6 +1,6 @@
 # GMatLinearElastic
 
-[![Travis](https://travis-ci.com/tdegeus/GMatElastic.svg?branch=master)](https://travis-ci.com/tdegeus/GMatElastic)
+[![CI](https://github.com/tdegeus/GMatElastic/workflows/CI/badge.svg)](https://github.com/tdegeus/GMatElastic/actions)
 
 Linear elastic material model.
 An overview of the theory can be found in `docs/readme.tex` 
