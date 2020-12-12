@@ -117,7 +117,7 @@ int main()
     ...
     
     // compute stress (including allocation of the result)
-    xt::xtensor<double, 2> Sig = elastic.Stress();
+    auto Sig = elastic.Stress();
     // OR compute stress without (re)allocating the results
     // in this case "Sig" has to be of the correct type and shape
     model.stress(Sig); 
@@ -299,7 +299,7 @@ target_link_libraries(example PRIVATE GMatElastic)
 The following targets are available:
 
 *   `GMatElastic`
-    Includes *GMatElastic* and the *xtensor* dependency.
+    Includes *GMatElastic* and the *GMatTensor* and *xtensor* dependencies.
 
 *   `GMatElastic::assert`
     Enables assertions by defining `GMATELASTIC_ENABLE_ASSERT`.
@@ -382,10 +382,10 @@ And then checks that the generated states are also found with previous
 versions:
 
 ```
-git checkout tags/v0.1.3
+git checkout tags/v0.1.0
 python setup.py build
 python setup.py install
-python Cartesian2d_check_v0.1.3.py
+python Cartesian3d_check_v0.1.0.py
 ```
 
 etc.
