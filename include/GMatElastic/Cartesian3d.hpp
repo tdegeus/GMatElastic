@@ -13,10 +13,10 @@ namespace GMatElastic {
 namespace Cartesian3d {
 
 template <class T, class U>
-inline void epseq(const T& A, U& B)
+inline void epseq(const T& A, U& ret)
 {
-    GMatTensor::Cartesian3d::norm_deviatoric(A, B);
-    B *= std::sqrt(2.0 / 3.0);
+    GMatTensor::Cartesian3d::norm_deviatoric(A, ret);
+    ret *= std::sqrt(2.0 / 3.0);
 }
 
 template <class T>
@@ -26,10 +26,10 @@ inline auto Epseq(const T& A)
 }
 
 template <class T, class U>
-inline void sigeq(const T& A, U& B)
+inline void sigeq(const T& A, U& ret)
 {
-    GMatTensor::Cartesian3d::norm_deviatoric(A, B);
-    B *= std::sqrt(1.5);
+    GMatTensor::Cartesian3d::norm_deviatoric(A, ret);
+    ret *= std::sqrt(1.5);
 }
 
 template <class T>
