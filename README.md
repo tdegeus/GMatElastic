@@ -40,6 +40,7 @@ conveniently compiled to this [PDF](docs/readme.pdf).
 - [Upgrading instructions](#upgrading-instructions)
     - [Upgrading to >v0.2.*](#upgrading-to-v02)
 - [Change-log](#change-log)
+    - [v0.2.1](#v021)
     - [v0.2.0](#v020)
 
 <!-- /MarkdownTOC -->
@@ -435,6 +436,10 @@ This requires the following changes:
     - `tangent`: no argument, single return value (no longer returns stress).
 
 # Change-log
+
+## v0.2.1
+
+*   Adding missing overload Python API (#20).
 
 ## v0.2.0
 
