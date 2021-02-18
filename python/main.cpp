@@ -21,6 +21,11 @@ auto construct_Array(T& self)
     namespace SM = GMatElastic::Cartesian3d;
 
     self.def(py::init<std::array<size_t, S::rank>>(), "Array of material points.", py::arg("shape"))
+        .def(py::init<std::array<size_t, S::rank>, double, double>(),
+             "Array of material points.",
+             py::arg("shape"),
+             py::arg("K"),
+             py::arg("G"))
 
         .def("shape", &S::shape, "Shape of array.")
         .def("I2", &S::I2, "Array with 2nd-order unit tensors.")
