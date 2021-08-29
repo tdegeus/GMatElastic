@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.19..3.21)
 
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    project(GMatElastoPlasticQPot)
-    find_package(GMatElastoPlasticQPot REQUIRED CONFIG)
+    project(GMatElastic)
+    find_package(GMatElastic REQUIRED CONFIG)
     option(USE_ASSERT "${PROJECT_NAME}: Build with assertions" ON)
     option(USE_DEBUG "${PROJECT_NAME}: Build in debug mode" OFF)
     option(USE_SIMD "${PROJECT_NAME}: Build with hardware optimization" OFF)
