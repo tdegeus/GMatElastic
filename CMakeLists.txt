@@ -201,6 +201,7 @@ if(BUILD_DOCS OR BUILD_ALL)
 
     set(${PROJECT_NAME}_DOCS_STRIP_INC
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "${GMatElastic_STRIP}"
         "${GMatTensor_STRIP}")
 
     list(REMOVE_DUPLICATES ${PROJECT_NAME}_DOCS_STRIP)
