@@ -1,9 +1,20 @@
 channels:
   - conda-forge
 dependencies:
-  - gmattensor
-  - xtensor
+  - catch2
   - cmake
-  - xsimd
+  - doxygen
+  - gmattensor
+  - goosefem
+  - h5py
+  - mathjax
+  - ninja
+  - numpy
+  - pybind11
   - python
-  - pyxtensor
+  - python-qpot
+  - qpot
+  - scikit-build
+  - setuptools_scm
+  - xtensor
+  - xtensor-python
