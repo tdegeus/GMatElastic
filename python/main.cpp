@@ -103,6 +103,14 @@ PYBIND11_MODULE(_GMatElastic, m)
 
     m.doc() = "Linear elastic material model";
 
+    m.def("version",
+          &GMatElastic::version,
+          "Return version string.");
+
+    m.def("version_dependencies",
+          &GMatElastic::version_dependencies,
+          "Return list of strings.");
+
     // -----------------------
     // GMatElastic.Cartesian3d
     // -----------------------
