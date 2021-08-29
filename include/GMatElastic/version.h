@@ -8,6 +8,7 @@
 #define GMATELASTIC_VERSION_H
 
 #include "config.h"
+#include <GMatTensor/version.h>
 
 /**
 Current version.

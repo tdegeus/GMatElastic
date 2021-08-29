@@ -32,7 +32,7 @@ inline std::vector<std::string> version_dependencies()
     std::vector<std::string> ret;
 
     ret.push_back("gmatelastic=" + version());
-
+    ret.push_back("gmattensor=" + GMatTensor::version());
     ret.push_back("xtensor=" +
         detail::unquote(std::string(QUOTE(XTENSOR_VERSION_MAJOR))) + "." +
         detail::unquote(std::string(QUOTE(XTENSOR_VERSION_MINOR))) + "." +
