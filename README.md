@@ -3,7 +3,7 @@
 [![CI](https://github.com/tdegeus/GMatElastic/workflows/CI/badge.svg)](https://github.com/tdegeus/GMatElastic/actions)
 
 Linear elastic material model.
-An overview of the theory can be found in `docs/readme.tex` 
+An overview of the theory can be found in `docs/readme.tex`
 conveniently compiled to this [PDF](docs/readme.pdf).
 
 # Contents
@@ -40,6 +40,7 @@ conveniently compiled to this [PDF](docs/readme.pdf).
 - [Upgrading instructions](#upgrading-instructions)
     - [Upgrading to >v0.2.*](#upgrading-to-v02)
 - [Change-log](#change-log)
+    - [v0.2.2](#v022)
     - [v0.2.1](#v021)
     - [v0.2.0](#v020)
 
@@ -56,7 +57,7 @@ Bug reports or feature requests can be filed on
 As always, the code comes with no guarantee.
 None of the developers can be held responsible for possible mistakes.
 
-Download: 
+Download:
 [.zip file](https://github.com/tdegeus/GMatElastic/zipball/master) |
 [.tar.gz file](https://github.com/tdegeus/GMatElastic/tarball/master).
 
@@ -68,13 +69,13 @@ T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me |
 
 ## C++ and Python
 
-The code is a C++ header-only library (see [installation notes](#c-headers)), 
+The code is a C++ header-only library (see [installation notes](#c-headers)),
 but a Python module is also provided (see [installation notes](#python-module)).
 The interfaces are identical except:
 
-+   All *xtensor* objects (`xt::xtensor<...>`) are *NumPy* arrays in Python. 
++   All *xtensor* objects (`xt::xtensor<...>`) are *NumPy* arrays in Python.
     Overloading based on rank is also available in Python.
-+   The Python module cannot change output objects in-place: 
++   The Python module cannot change output objects in-place:
     only functions whose name starts with a capital letter are included, see below.
 +   All `::` in C++ are `.` in Python.
 
@@ -89,9 +90,9 @@ At the material point level to model is implemented in the class:
 +   `Elastic`: linear elastic material model.
 
 There is an `Array` class that allows you to
-have a single API for an array of material points. 
+have a single API for an array of material points.
 
->   Note that all strain tensors are presumed symmetric. 
+>   Note that all strain tensors are presumed symmetric.
 >   No checks are made to ensure this.
 
 ### Example
@@ -110,18 +111,18 @@ int main()
     // a single material point
     GMat::Elastic model(K, G);
     ...
-    
+
     // set strain (follows e.g. from FEM discretisation)
     xt::xtensor<double, 2> Eps;
     ...
     model.setStrain(Eps);
     ...
-    
+
     // compute stress (including allocation of the result)
     auto Sig = elastic.Stress();
     // OR compute stress without (re)allocating the results
     // in this case "Sig" has to be of the correct type and shape
-    model.stress(Sig); 
+    model.stress(Sig);
     ...
 
     return 0;
@@ -138,7 +139,7 @@ namespace GMat = GMatLinearElastic::Cartesian3d;
 int main()
 {
     size_t ndim = 3;
-    
+
     // array, of shape [nelem, nip], of material points
     GMat::Array<2> array({nelem, nip});
 
@@ -150,14 +151,14 @@ int main()
 
     // set strain tensor (follows e.g. from FEM discretisation)
     xt::xtensor<double,4> eps = xt::empty<double>({nelem, nip, ndim, ndim});
-    ... 
+    ...
     array.setStrain(eps);
 
     // compute stress (allocate result)
     xt::xtensor<double,4> sig = array.Stress();
     // OR compute stress without (re)allocating the results
     // in this case "sig" has to be of the correct type and shape
-    array.stress(sig); 
+    array.stress(sig);
     ...
 
     return 0;
@@ -166,10 +167,10 @@ int main()
 
 ### Function names
 
-+   Functions whose name starts with a capital letter (e.g. `Stress`) 
++   Functions whose name starts with a capital letter (e.g. `Stress`)
     return their result (allocating it internally).
-+   Functions whose name starts with a small letter (e.g. `stress`) 
-    write to the, fully allocated, last input argument(s) 
++   Functions whose name starts with a small letter (e.g. `stress`)
+    write to the, fully allocated, last input argument(s)
     (avoiding re-allocation, but making the user responsible to do it properly).
 
 ### Storage
@@ -203,19 +204,19 @@ int main()
 
 ## Debugging
 
-To enable assertions define `GMATELASTIC_ENABLE_ASSERT` 
-**before** including *GMatElastic* for the first time. 
+To enable assertions define `GMATELASTIC_ENABLE_ASSERT`
+**before** including *GMatElastic* for the first time.
 
-Using *CMake* this can be done using the `GMatElastic::assert` target 
+Using *CMake* this can be done using the `GMatElastic::assert` target
 (see [below](#using-cmake)).
 
->   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT` 
->   **before** including *xtensor* (and *GMatElastic*) for the first time. 
->   
->   Using *CMake* all assertions are enabled using the `GMatElastic::debug` target 
+>   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT`
+>   **before** including *xtensor* (and *GMatElastic*) for the first time.
+>
+>   Using *CMake* all assertions are enabled using the `GMatElastic::debug` target
 >   (see [below](#using-cmake)).
 
->   The library's assertions are enabled in the Python interface, 
+>   The library's assertions are enabled in the Python interface,
 >   but debugging with *xtensor* is disabled.
 
 # Installation
@@ -248,22 +249,22 @@ make install
 conda install -c conda-forge python-gmatelastic
 ```
 
-Note that *xsimd* and hardware optimisations are **not enabled**. 
+Note that *xsimd* and hardware optimisations are **not enabled**.
 To enable them you have to compile on your system, as is discussed next.
 
 ### From source
 
->   You need *xtensor*, *pyxtensor* and optionally *xsimd* as prerequisites. 
->   Additionally, Python needs to know how to find them. 
+>   You need *xtensor*, *pyxtensor* and optionally *xsimd* as prerequisites.
+>   Additionally, Python needs to know how to find them.
 >   The easiest is to use *conda* to get the prerequisites:
-> 
+>
 >   ```bash
 >   conda install -c conda-forge pyxtensor
 >   conda install -c conda-forge xsimd
 >   ```
->   
->   If you then compile and install with the same environment 
->   you should be good to go. 
+>
+>   If you then compile and install with the same environment
+>   you should be good to go.
 >   Otherwise, a bit of manual labour might be needed to
 >   treat the dependencies.
 
@@ -306,7 +307,7 @@ The following targets are available:
     Enables assertions by defining `GMATELASTIC_ENABLE_ASSERT`.
 
 *   `GMatElastic::debug`
-    Enables all assertions by defining 
+    Enables all assertions by defining
     `GMATELASTIC_ENABLE_ASSERT` and `XTENSOR_ENABLE_ASSERT`.
 
 *   `GMatElastic::compiler_warings`
@@ -314,8 +315,8 @@ The following targets are available:
 
 ### Optimisation
 
-It is advised to think about compiler optimization and enabling *xsimd*. 
-Using *CMake* this can be done using the `xtensor::optimize` and `xtensor::use_xsimd` targets. 
+It is advised to think about compiler optimization and enabling *xsimd*.
+Using *CMake* this can be done using the `xtensor::optimize` and `xtensor::use_xsimd` targets.
 The above example then becomes:
 
 ```cmake
@@ -323,9 +324,9 @@ cmake_minimum_required(VERSION 3.1)
 project(example)
 find_package(GMatElastic REQUIRED)
 add_executable(example example.cpp)
-target_link_libraries(example PRIVATE 
-    GMatElastic 
-    xtensor::optimize 
+target_link_libraries(example PRIVATE
+    GMatElastic
+    xtensor::optimize
     xtensor::use_xsimd)
 ```
 
@@ -339,7 +340,7 @@ Presuming that the compiler is `c++`, compile using:
 c++ -I/path/to/GMatElastic/include ...
 ```
 
-Note that you have to take care of the *xtensor* dependency, the C++ version, optimization, 
+Note that you have to take care of the *xtensor* dependency, the C++ version, optimization,
 enabling *xsimd*, ...
 
 ## Using pkg-config
@@ -350,7 +351,7 @@ Presuming that the compiler is `c++`, compile using:
 c++ `pkg-config --cflags GMatElastic` ...
 ```
 
-Note that you have to take care of the *xtensor* dependency, the C++ version, optimization, 
+Note that you have to take care of the *xtensor* dependency, the C++ version, optimization,
 enabling *xsimd*, ...
 
 # Testing
@@ -401,41 +402,46 @@ See [ci.yaml](.github/workflows/ci.yml) for details.
 
 ## Upgrading to >v0.2.*
 
-`xtensor_fixed` was completely deprecated in v0.2.0, as were the type aliases 
-`Tensor2` and `Tensor4`. 
+`xtensor_fixed` was completely deprecated in v0.2.0, as were the type aliases
+`Tensor2` and `Tensor4`.
 Please update your code as follows:
 
 *   `Tensor2` -> `xt::xtensor<double, 2>`.
 *   `Tensor4` -> `xt::xtensor<double, 4>`.
 
 **Tip:** Used `auto` as return type as much as possible.
-This simplifies implementation, and renders is less subjective to library 
+This simplifies implementation, and renders is less subjective to library
 return type changes.
 
-Compared to v0.1.0, v0.2.0 has some generalisations and efficiency updates. 
+Compared to v0.1.0, v0.2.0 has some generalisations and efficiency updates.
 This requires the following changes:
 
 *   `Matrix` has been generalised to `Array<rank>`. Practically this requires changing:
     -   `Matrix` to `Array<2>` in C++.
-    -   `Matrix` to `Array2d` in Python. 
+    -   `Matrix` to `Array2d` in Python.
         Note that `Array1d`, `Array3d`, are also available.
 
-*   `Array<rank>.check` -> 
+*   `Array<rank>.check` ->
     ```cpp
     if (xt::any(xt::equal(array.type(), Type::Unset))) {
         throw std::runtime_error("Please set all points");
     }
     ```
-    Note however that it is no longer required to set all points, 
+    Note however that it is no longer required to set all points,
     unset points are filled-up with zeros.
 
-*   Strain is now stored as a member. 
-    Functions like `stress` now return the state based on the last specified strain, 
+*   Strain is now stored as a member.
+    Functions like `stress` now return the state based on the last specified strain,
     specified using `setStrain(Esp)`. This leads to the following changes:
     - `stress`: no argument.
     - `tangent`: no argument, single return value (no longer returns stress).
 
 # Change-log
+
+## v0.2.2
+
+*   Using scikit-build, setuptools_scm, xtensor-python (#21)
+*   CMake clean-up (#21)
 
 ## v0.2.1
 
@@ -443,22 +449,22 @@ This requires the following changes:
 
 ## v0.2.0
 
-Compared to v0.1.0, v0.2.0 has some generalisations and efficiency updates. 
+Compared to v0.1.0, v0.2.0 has some generalisations and efficiency updates.
 This requires the following changes:
 
 *   `Matrix` has been generalised to `Array<rank>`. Practically this requires changing:
     -   `Matrix` to `Array<2>` in C++.
-    -   `Matrix` to `Array2d` in Python. 
+    -   `Matrix` to `Array2d` in Python.
         Note that `Array1d`, `Array3d`, are also available.
 
-*   `Array` now sets zeros for all `Type::Unset` points. 
+*   `Array` now sets zeros for all `Type::Unset` points.
     The function `check` is deprecated accordingly.
 
-*   Strain is now stored as a member. 
-    Functions like `stress` now return the state based on the last specified strain, 
+*   Strain is now stored as a member.
+    Functions like `stress` now return the state based on the last specified strain,
     specified using `setStrain(Esp)`. This leads to the following changes:
     - `stress`: no argument.
     - `tangent`: no argument, single return value (no longer returns stress).
 
-*   Tensor operations are now provided centrally in the GMat eco-system, 
+*   Tensor operations are now provided centrally in the GMat eco-system,
     by GMatTensor
