@@ -54,6 +54,11 @@ jobs:
       working-directory: build
       run: cmake --build .
 
+    - name: Build doxygen-docs (error on warning)
+      if: runner.os == 'Linux'
+      working-directory: build
+      run: make html
+
     - name: Run C++ ${{ matrix.prop }}
       working-directory: build
       run: ctest --output-on-failure

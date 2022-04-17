@@ -20,7 +20,6 @@
             ": assertion failed (" #expr ") \n\t"); \
     }
 
-
 /**
 \endcond
 */
