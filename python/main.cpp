@@ -62,7 +62,8 @@ auto construct_Array(T& cls)
 
     cls.def(
         "setElastic",
-        &S::template setElastic<xt::pytensor<bool, S::rank + 2>>,
+        static_cast<void (S::*)(const xt::pytensor<bool, S::rank>&, double, double)>(
+            &S::template setElastic),
         "Set specific entries 'Elastic'.",
         py::arg("I"),
         py::arg("K"),
