@@ -1,10 +1,10 @@
 #define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
-#include <xtensor/xrandom.hpp>
 #include <GMatElastic/Cartesian3d.h>
 #include <GMatTensor/Cartesian3d.h>
+#include <catch2/catch.hpp>
+#include <xtensor/xrandom.hpp>
 
-#define ISCLOSE(a,b) REQUIRE_THAT((a), Catch::WithinAbs((b), 1e-12));
+#define ISCLOSE(a, b) REQUIRE_THAT((a), Catch::WithinAbs((b), 1e-12));
 
 namespace GM = GMatElastic::Cartesian3d;
 namespace GT = GMatTensor::Cartesian3d;
@@ -24,8 +24,8 @@ TEST_CASE("GMatElastic::Cartesian3d", "Cartesian3d.h")
         auto A = GT::O2();
         A(0, 1) = 1.0;
         A(1, 0) = 1.0;
-        auto M = xt::xtensor<double,3>::from_shape({3, 3, 3});
-        auto R = xt::xtensor<double,1>::from_shape({M.shape(0)});
+        auto M = xt::xtensor<double, 3>::from_shape({3, 3, 3});
+        auto R = xt::xtensor<double, 1>::from_shape({M.shape(0)});
         for (size_t i = 0; i < M.shape(0); ++i) {
             xt::view(M, i, xt::all(), xt::all()) = static_cast<double>(i) * A;
             R(i) = static_cast<double>(i) * 2.0 / std::sqrt(3.0);
@@ -38,11 +38,12 @@ TEST_CASE("GMatElastic::Cartesian3d", "Cartesian3d.h")
         auto A = GT::O2();
         A(0, 1) = 1.0;
         A(1, 0) = 1.0;
-        auto M = xt::xtensor<double,4>::from_shape({3, 4, 3, 3});
-        auto R = xt::xtensor<double,2>::from_shape({M.shape(0), M.shape(1)});
+        auto M = xt::xtensor<double, 4>::from_shape({3, 4, 3, 3});
+        auto R = xt::xtensor<double, 2>::from_shape({M.shape(0), M.shape(1)});
         for (size_t i = 0; i < M.shape(0); ++i) {
             for (size_t j = 0; j < M.shape(1); ++j) {
-                xt::view(M, i, j, xt::all(), xt::all()) = static_cast<double>(i * M.shape(1) + j) * A;
+                xt::view(M, i, j, xt::all(), xt::all()) =
+                    static_cast<double>(i * M.shape(1) + j) * A;
                 R(i, j) = static_cast<double>(i * M.shape(1) + j) * 2.0 / std::sqrt(3.0);
             }
         }
@@ -62,8 +63,8 @@ TEST_CASE("GMatElastic::Cartesian3d", "Cartesian3d.h")
         auto A = GT::O2();
         A(0, 1) = 1.0;
         A(1, 0) = 1.0;
-        auto M = xt::xtensor<double,3>::from_shape({3, 3, 3});
-        auto R = xt::xtensor<double,1>::from_shape({M.shape(0)});
+        auto M = xt::xtensor<double, 3>::from_shape({3, 3, 3});
+        auto R = xt::xtensor<double, 1>::from_shape({M.shape(0)});
         for (size_t i = 0; i < M.shape(0); ++i) {
             xt::view(M, i, xt::all(), xt::all()) = static_cast<double>(i) * A;
             R(i) = static_cast<double>(i) * std::sqrt(3.0);
@@ -76,11 +77,12 @@ TEST_CASE("GMatElastic::Cartesian3d", "Cartesian3d.h")
         auto A = GT::O2();
         A(0, 1) = 1.0;
         A(1, 0) = 1.0;
-        auto M = xt::xtensor<double,4>::from_shape({3, 4, 3, 3});
-        auto R = xt::xtensor<double,2>::from_shape({M.shape(0), M.shape(1)});
+        auto M = xt::xtensor<double, 4>::from_shape({3, 4, 3, 3});
+        auto R = xt::xtensor<double, 2>::from_shape({M.shape(0), M.shape(1)});
         for (size_t i = 0; i < M.shape(0); ++i) {
             for (size_t j = 0; j < M.shape(1); ++j) {
-                xt::view(M, i, j, xt::all(), xt::all()) = static_cast<double>(i * M.shape(1) + j) * A;
+                xt::view(M, i, j, xt::all(), xt::all()) =
+                    static_cast<double>(i * M.shape(1) + j) * A;
                 R(i, j) = static_cast<double>(i * M.shape(1) + j) * std::sqrt(3.0);
             }
         }
@@ -94,10 +96,7 @@ TEST_CASE("GMatElastic::Cartesian3d", "Cartesian3d.h")
         double gamma = 0.02;
         double epsm = 0.12;
 
-        xt::xtensor<double, 2> Eps = {
-            {epsm, gamma, 0.0},
-            {gamma, epsm, 0.0},
-            {0.0, 0.0, epsm}};
+        xt::xtensor<double, 2> Eps = {{epsm, gamma, 0.0}, {gamma, epsm, 0.0}, {0.0, 0.0, epsm}};
 
         xt::xtensor<double, 2> Sig = {
             {3.0 * K * epsm, 2.0 * G * gamma, 0.0},
@@ -133,10 +132,7 @@ TEST_CASE("GMatElastic::Cartesian3d", "Cartesian3d.h")
         double gamma = 0.02;
         double epsm = 0.12;
 
-        xt::xtensor<double, 2> Eps = {
-            {epsm, gamma, 0.0},
-            {gamma, epsm, 0.0},
-            {0.0, 0.0, epsm}};
+        xt::xtensor<double, 2> Eps = {{epsm, gamma, 0.0}, {gamma, epsm, 0.0}, {0.0, 0.0, epsm}};
 
         xt::xtensor<double, 2> Sig = {
             {3.0 * K * epsm, 2.0 * G * gamma, 0.0},
@@ -150,7 +146,7 @@ TEST_CASE("GMatElastic::Cartesian3d", "Cartesian3d.h")
         GM::Array<2> mat({nelem, nip});
 
         {
-            xt::xtensor<size_t,2> I = xt::ones<size_t>({nelem, nip});
+            xt::xtensor<size_t, 2> I = xt::ones<size_t>({nelem, nip});
             mat.setElastic(I, K, G);
         }
 
@@ -177,10 +173,7 @@ TEST_CASE("GMatElastic::Cartesian3d", "Cartesian3d.h")
         double gamma = 0.02;
         double epsm = 0.12;
 
-        xt::xtensor<double, 2> Eps = {
-            {epsm, gamma, 0.0},
-            {gamma, epsm, 0.0},
-            {0.0, 0.0, epsm}};
+        xt::xtensor<double, 2> Eps = {{epsm, gamma, 0.0}, {gamma, epsm, 0.0}, {0.0, 0.0, epsm}};
 
         xt::xtensor<double, 2> Sig = {
             {3.0 * K * epsm, 2.0 * G * gamma, 0.0},
@@ -193,7 +186,7 @@ TEST_CASE("GMatElastic::Cartesian3d", "Cartesian3d.h")
         GM::Array<2> mat({nelem, nip});
 
         {
-            xt::xtensor<size_t,2> I = xt::ones<size_t>({nelem, nip});
+            xt::xtensor<size_t, 2> I = xt::ones<size_t>({nelem, nip});
             mat.setElastic(I, K, G);
         }
 

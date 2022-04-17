@@ -16,21 +16,21 @@ namespace Cartesian3d {
 
 // Unit tensors
 
-using GMatTensor::Cartesian3d::O2;
-using GMatTensor::Cartesian3d::O4;
 using GMatTensor::Cartesian3d::I2;
-using GMatTensor::Cartesian3d::II;
 using GMatTensor::Cartesian3d::I4;
+using GMatTensor::Cartesian3d::I4d;
 using GMatTensor::Cartesian3d::I4rt;
 using GMatTensor::Cartesian3d::I4s;
-using GMatTensor::Cartesian3d::I4d;
+using GMatTensor::Cartesian3d::II;
+using GMatTensor::Cartesian3d::O2;
+using GMatTensor::Cartesian3d::O4;
 
 // Tensor decomposition
 
-using GMatTensor::Cartesian3d::hydrostatic;
-using GMatTensor::Cartesian3d::Hydrostatic;
 using GMatTensor::Cartesian3d::deviatoric;
 using GMatTensor::Cartesian3d::Deviatoric;
+using GMatTensor::Cartesian3d::hydrostatic;
+using GMatTensor::Cartesian3d::Hydrostatic;
 
 // Equivalent strain
 
@@ -50,8 +50,7 @@ inline auto Sigeq(const T& A);
 
 // Material point
 
-class Elastic
-{
+class Elastic {
 public:
     Elastic() = default;
     Elastic(double K, double G);
@@ -60,15 +59,23 @@ public:
     double G() const;
     double energy() const;
 
-    template <class T> void setStrain(const T& arg);
-    template <class T> void strain(T& ret) const;
-    template <class T> void stress(T& ret) const;
-    template <class T> void tangent(T& ret) const;
+    template <class T>
+    void setStrain(const T& arg);
+    template <class T>
+    void strain(T& ret) const;
+    template <class T>
+    void stress(T& ret) const;
+    template <class T>
+    void tangent(T& ret) const;
 
-    template <class T> void setStrainPtr(const T* arg);
-    template <class T> void strainPtr(T* ret) const;
-    template <class T> void stressPtr(T* ret) const;
-    template <class T> void tangentPtr(T* ret) const;
+    template <class T>
+    void setStrainPtr(const T* arg);
+    template <class T>
+    void strainPtr(T* ret) const;
+    template <class T>
+    void stressPtr(T* ret) const;
+    template <class T>
+    void tangentPtr(T* ret) const;
 
     xt::xtensor<double, 2> Strain() const;
     xt::xtensor<double, 2> Stress() const;
@@ -93,8 +100,7 @@ struct Type {
 // Array of material points
 
 template <size_t N>
-class Array : public GMatTensor::Cartesian3d::Array<N>
-{
+class Array : public GMatTensor::Cartesian3d::Array<N> {
 public:
     using GMatTensor::Cartesian3d::Array<N>::rank;
 
@@ -145,7 +151,7 @@ private:
     std::vector<Elastic> m_Elastic;
 
     // Identifiers for each matrix entry
-    xt::xtensor<size_t, N> m_type;  // type (e.g. "Type::Elastic")
+    xt::xtensor<size_t, N> m_type; // type (e.g. "Type::Elastic")
     xt::xtensor<size_t, N> m_index; // index from the relevant material vector (e.g. "m_Elastic")
 
     // Shape

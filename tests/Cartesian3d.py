@@ -1,9 +1,10 @@
 import unittest
-import numpy as np
+
 import GMatElastic.Cartesian3d as GMat
+import numpy as np
+
 
 class Test_main(unittest.TestCase):
-
     def test_Elastic(self):
 
         K = 12.3
@@ -12,15 +13,15 @@ class Test_main(unittest.TestCase):
         gamma = 0.02
         epsm = 0.12
 
-        Eps = np.array(
-            [[epsm, gamma, 0.0],
-             [gamma, epsm, 0.0],
-             [0.0, 0.0, epsm]])
+        Eps = np.array([[epsm, gamma, 0.0], [gamma, epsm, 0.0], [0.0, 0.0, epsm]])
 
         Sig = np.array(
-            [[3.0 * K * epsm, 2.0 * G * gamma, 0.0],
-             [2.0 * G * gamma, 3.0 * K * epsm, 0.0],
-             [0.0, 0.0, 3.0 * K * epsm]])
+            [
+                [3.0 * K * epsm, 2.0 * G * gamma, 0.0],
+                [2.0 * G * gamma, 3.0 * K * epsm, 0.0],
+                [0.0, 0.0, 3.0 * K * epsm],
+            ]
+        )
 
         self.assertTrue(np.isclose(float(GMat.Epseq(Eps)), 2.0 / np.sqrt(3.0) * gamma))
 
@@ -37,23 +38,23 @@ class Test_main(unittest.TestCase):
         gamma = 0.02
         epsm = 0.12
 
-        Eps = np.array(
-            [[epsm, gamma, 0.0],
-             [gamma, epsm, 0.0],
-             [0.0, 0.0, epsm]])
+        Eps = np.array([[epsm, gamma, 0.0], [gamma, epsm, 0.0], [0.0, 0.0, epsm]])
 
         Sig = np.array(
-            [[3.0 * K * epsm, 2.0 * G *gamma, 0.0],
-             [2.0 * G *gamma, 3.0 * K * epsm, 0.0],
-             [0.0, 0.0, 3.0 * K * epsm]])
+            [
+                [3.0 * K * epsm, 2.0 * G * gamma, 0.0],
+                [2.0 * G * gamma, 3.0 * K * epsm, 0.0],
+                [0.0, 0.0, 3.0 * K * epsm],
+            ]
+        )
 
         nelem = 3
         nip = 2
         mat = GMat.Array2d([nelem, nip])
         ndim = 3
 
-        I = np.ones([nelem, nip], dtype='int')
-        mat.setElastic(I, K, G)
+        iden = np.ones([nelem, nip], dtype="int")
+        mat.setElastic(iden, K, G)
 
         eps = np.zeros((nelem, nip, ndim, ndim))
         sig = np.zeros((nelem, nip, ndim, ndim))
@@ -68,6 +69,7 @@ class Test_main(unittest.TestCase):
 
         self.assertTrue(np.allclose(mat.Stress(), sig))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
 
     unittest.main()

@@ -21,13 +21,14 @@ Either:
 
 -   Define externally using::
 
-        -DGMATELASTIC_VERSION="`python -c "from setuptools_scm import get_version; print(get_version())"`"
+        -DGMATELASTIC_VERSION="`python -c "from setuptools_scm import get_version;
+print(get_version())"`"
 
     From the root of this project. This is what ``setup.py`` does.
 
-Note that both ``CMakeLists.txt`` and ``setup.py`` will construct the version using ``setuptools_scm``.
-Tip: use the environment variable ``SETUPTOOLS_SCM_PRETEND_VERSION``
-to overwrite the automatic version.
+Note that both ``CMakeLists.txt`` and ``setup.py`` will construct the version using
+``setuptools_scm``. Tip: use the environment variable ``SETUPTOOLS_SCM_PRETEND_VERSION`` to
+overwrite the automatic version.
 */
 #ifndef GMATELASTIC_VERSION
 #define GMATELASTIC_VERSION "@PROJECT_VERSION@"
