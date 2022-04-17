@@ -1,7 +1,7 @@
-/*
-
-(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastic
-
+/**
+\file
+\copyright Copyright. Tom de Geus. All rights reserved.
+\license This project is released under the MIT License.
 */
 
 #ifndef GMATELASTIC_CARTESIAN3D_ELASTIC_HPP
@@ -87,7 +87,7 @@ inline void Elastic::setStrain(const T& arg)
 template <class T>
 inline void Elastic::strain(T& ret) const
 {
-    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, {3, 3}));
+    GMATELASTIC_ASSERT(xt::has_shape(ret, {3, 3}));
     return this->strainPtr(ret.data());
 }
 

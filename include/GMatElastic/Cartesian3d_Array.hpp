@@ -1,7 +1,7 @@
-/*
-
-(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastic
-
+/**
+\file
+\copyright Copyright. Tom de Geus. All rights reserved.
+\license This project is released under the MIT License.
 */
 
 #ifndef GMATELASTIC_CARTESIAN3D_ARRAY_HPP
@@ -39,12 +39,12 @@ inline xt::xtensor<double, N> Array<N>::K() const
 
 #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            ret.data()[i] = 0.0;
+            ret.flat(i) = 0.0;
             break;
         case Type::Elastic:
-            ret.data()[i] = m_Elastic[m_index.data()[i]].K();
+            ret.flat(i) = m_Elastic[m_index.flat(i)].K();
             break;
         }
     }
@@ -59,12 +59,12 @@ inline xt::xtensor<double, N> Array<N>::G() const
 
 #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            ret.data()[i] = 0.0;
+            ret.flat(i) = 0.0;
             break;
         case Type::Elastic:
-            ret.data()[i] = m_Elastic[m_index.data()[i]].G();
+            ret.flat(i) = m_Elastic[m_index.flat(i)].G();
             break;
         }
     }
@@ -79,95 +79,97 @@ inline xt::xtensor<size_t, N> Array<N>::type() const
 }
 
 template <size_t N>
-inline xt::xtensor<size_t, N> Array<N>::isElastic() const
+inline xt::xtensor<bool, N> Array<N>::isElastic() const
 {
-    xt::xtensor<size_t, N> ret = xt::where(xt::equal(m_type, Type::Elastic), 1ul, 0ul);
-    return ret;
+    return xt::equal(m_type, Type::Elastic);
 }
 
 template <size_t N>
-inline void Array<N>::setElastic(const xt::xtensor<size_t, N>& I, double K, double G)
+template <class L>
+inline void Array<N>::setElastic(const L& I, double K, double G)
 {
     GMATELASTIC_ASSERT(xt::has_shape(m_type, I.shape()));
-    GMATELASTIC_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
-    GMATELASTIC_ASSERT(
-        xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
+    GMATELASTIC_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i] == 1ul) {
-            m_type.data()[i] = Type::Elastic;
-            m_index.data()[i] = m_Elastic.size();
+        if (I.flat(i)) {
+            m_type.flat(i) = Type::Elastic;
+            m_index.flat(i) = m_Elastic.size();
             m_Elastic.push_back(Elastic(K, G));
         }
     }
 }
 
 template <size_t N>
-inline void Array<N>::setStrain(const xt::xtensor<double, N + 2>& arg)
+template <class T>
+inline void Array<N>::setStrain(const T& arg)
 {
     GMATELASTIC_ASSERT(xt::has_shape(arg, m_shape_tensor2));
 
 #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].setStrainPtr(&arg.data()[i * m_stride_tensor2]);
+            m_Elastic[m_index.flat(i)].setStrainPtr(&arg.flat(i * m_stride_tensor2));
             break;
         }
     }
 }
 
 template <size_t N>
-inline void Array<N>::strain(xt::xtensor<double, N + 2>& ret) const
+template <class R>
+inline void Array<N>::strain(R& ret) const
 {
     GMATELASTIC_ASSERT(xt::has_shape(ret, m_shape_tensor2));
 
 #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            GMatTensor::Cartesian3d::pointer::O2(&ret.data()[i * m_stride_tensor2]);
+            GMatTensor::Cartesian3d::pointer::O2(&ret.flat(i * m_stride_tensor2));
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].strainPtr(&ret.data()[i * m_stride_tensor2]);
+            m_Elastic[m_index.flat(i)].strainPtr(&ret.flat(i * m_stride_tensor2));
             break;
         }
     }
 }
 
 template <size_t N>
-inline void Array<N>::stress(xt::xtensor<double, N + 2>& ret) const
+template <class R>
+inline void Array<N>::stress(R& ret) const
 {
     GMATELASTIC_ASSERT(xt::has_shape(ret, m_shape_tensor2));
 
 #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            GMatTensor::Cartesian3d::pointer::O2(&ret.data()[i * m_stride_tensor2]);
+            GMatTensor::Cartesian3d::pointer::O2(&ret.flat(i * m_stride_tensor2));
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].stressPtr(&ret.data()[i * m_stride_tensor2]);
+            m_Elastic[m_index.flat(i)].stressPtr(&ret.flat(i * m_stride_tensor2));
             break;
         }
     }
 }
 
 template <size_t N>
-inline void Array<N>::tangent(xt::xtensor<double, N + 4>& ret) const
+template <class R>
+inline void Array<N>::tangent(R& ret) const
 {
     GMATELASTIC_ASSERT(xt::has_shape(ret, m_shape_tensor4));
 
 #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            GMatTensor::Cartesian3d::pointer::O4(&ret.data()[i * m_stride_tensor4]);
+            GMatTensor::Cartesian3d::pointer::O4(&ret.flat(i * m_stride_tensor4));
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].tangentPtr(&ret.data()[i * m_stride_tensor4]);
+            m_Elastic[m_index.flat(i)].tangentPtr(&ret.flat(i * m_stride_tensor4));
             break;
         }
     }
@@ -198,17 +200,17 @@ inline xt::xtensor<double, N + 4> Array<N>::Tangent() const
 }
 
 template <size_t N>
-inline auto Array<N>::getElastic(const std::array<size_t, N>& index) const
+inline Elastic& Array<N>::refElastic(const std::array<size_t, N>& index)
 {
     GMATELASTIC_ASSERT(m_type[index] == Type::Elastic);
     return m_Elastic[m_index[index]];
 }
 
 template <size_t N>
-inline auto* Array<N>::refElastic(const std::array<size_t, N>& index)
+inline const Elastic& Array<N>::crefElastic(const std::array<size_t, N>& index) const
 {
     GMATELASTIC_ASSERT(m_type[index] == Type::Elastic);
-    return &m_Elastic[m_index[index]];
+    return m_Elastic[m_index[index]];
 }
 
 } // namespace Cartesian3d

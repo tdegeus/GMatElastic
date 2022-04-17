@@ -1,7 +1,7 @@
-/*
-
-(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastic
-
+/**
+\file
+\copyright Copyright. Tom de Geus. All rights reserved.
+\license This project is released under the MIT License.
 */
 
 #ifndef GMATELASTIC_H
