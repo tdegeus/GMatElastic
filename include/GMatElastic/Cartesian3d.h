@@ -281,8 +281,9 @@ public:
     Set all items Elastic, specifying material parameters per item.
 
     \tparam L e.g. `xt::xtensor<bool, N>`
-    \param K Bulk modulus per item [shape()].
-    \param G Shear modulus per item [shape()].
+    \param I Per item, ``true`` to set Elastic, ``false`` to skip.
+    \param K Bulk modulus.
+    \param G Shear modulus.
     */
     template <class L>
     void setElastic(const L& I, double K, double G);
