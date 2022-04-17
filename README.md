@@ -70,14 +70,8 @@ T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me |
 ## C++ and Python
 
 The code is a C++ header-only library (see [installation notes](#c-headers)),
-but a Python module is also provided (see [installation notes](#python-module)).
-The interfaces are identical except:
-
-+   All *xtensor* objects (`xt::xtensor<...>`) are *NumPy* arrays in Python.
-    Overloading based on rank is also available in Python.
-+   The Python module cannot change output objects in-place:
-    only functions whose name starts with a capital letter are included, see below.
-+   All `::` in C++ are `.` in Python.
+but a Python module is also provided (see [installation notes](#python-module))
+with an identical API (note that all `::` in C++ are `.` in Python).
 
 ## Cartesian3d
 
@@ -150,12 +144,12 @@ int main()
     ...
 
     // set strain tensor (follows e.g. from FEM discretisation)
-    xt::xtensor<double,4> eps = xt::empty<double>({nelem, nip, ndim, ndim});
+    xt::xtensor<double, 4> eps = xt::empty<double>({nelem, nip, ndim, ndim});
     ...
     array.setStrain(eps);
 
     // compute stress (allocate result)
-    xt::xtensor<double,4> sig = array.Stress();
+    xt::xtensor<double, 4> sig = array.Stress();
     // OR compute stress without (re)allocating the results
     // in this case "sig" has to be of the correct type and shape
     array.stress(sig);
@@ -192,13 +186,13 @@ int main()
 
 +   List *(i)* of second order tensors *(x,y)* : *A(i,x,y)*
     ```cpp
-    xt::xtensor<double,3>
+    xt::xtensor<double, 3>
     ```
     Note that the shape is `[I, 3, 3]`.
 
 +   Matrix *(i,j)* of second order tensors *(x,y)* : *A(i,j,x,y)*
     ```cpp
-    xt::xtensor<double,4>
+    xt::xtensor<double, 4>
     ```
     Note that the shape is `[I, J, 3, 3]`.
 
@@ -237,8 +231,9 @@ git checkout https://github.com/tdegeus/GMatElastic.git
 cd GMatElastic
 
 # Install headers, CMake and pkg-config support
-cmake .
-make install
+cmake -Bbuild
+cd build
+cmake --install .
 ```
 
 ## Python module
@@ -254,30 +249,26 @@ To enable them you have to compile on your system, as is discussed next.
 
 ### From source
 
->   You need *xtensor*, *pyxtensor* and optionally *xsimd* as prerequisites.
->   Additionally, Python needs to know how to find them.
+>   You need *xtensor*, *xtensor-python* and optionally *xsimd* as prerequisites.
 >   The easiest is to use *conda* to get the prerequisites:
 >
 >   ```bash
->   conda install -c conda-forge pyxtensor
+>   conda install -c conda-forge xtensor-python
 >   conda install -c conda-forge xsimd
 >   ```
 >
->   If you then compile and install with the same environment
->   you should be good to go.
->   Otherwise, a bit of manual labour might be needed to
->   treat the dependencies.
+>   If you then compile and install with the same environment you should be good to go.
+>   Otherwise, a bit of manual labour might be needed to treat the dependencies.
 
 ```bash
 # Download GMatElastic
 git checkout https://github.com/tdegeus/GMatElastic.git
 cd GMatElastic
 
-# Compile and install the Python module
-python setup.py build
-python setup.py install
-# OR you can use one command (but with less readable output)
-python -m pip install .
+# Only if you want to use hardware optimisation:
+export SKBUILD_CONFIGURE_OPTIONS="-DUSE_SIMD=1"
+
+python -m pip install . -v
 ```
 
 # Compiling
@@ -361,10 +352,9 @@ enabling *xsimd*, ...
 >   Run by the continuous integration
 
 ```
-cd build
-cmake .. -DBUILD_TESTS=1
-make
-./test/unit-tests
+cmake -Bbuild -DBUILD_TESTS=1
+cmake --build .
+ctest --output-on-failure
 ```
 
 ## Extensive testing
@@ -385,8 +375,7 @@ versions:
 
 ```
 git checkout tags/v0.1.0
-python setup.py build
-python setup.py install
+python -m pip install . -v
 python Cartesian3d_check_v0.1.0.py
 ```
 
