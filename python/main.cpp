@@ -10,8 +10,8 @@
 #define FORCE_IMPORT_ARRAY
 #include <xtensor-python/pytensor.hpp>
 
-#include <GMatElastic/version.h>
 #include <GMatElastic/Cartesian3d.h>
+#include <GMatElastic/version.h>
 
 namespace py = pybind11;
 
@@ -21,11 +21,12 @@ auto construct_Array(T& self)
     namespace SM = GMatElastic::Cartesian3d;
 
     self.def(py::init<std::array<size_t, S::rank>>(), "Array of material points.", py::arg("shape"))
-        .def(py::init<std::array<size_t, S::rank>, double, double>(),
-             "Array of material points.",
-             py::arg("shape"),
-             py::arg("K"),
-             py::arg("G"))
+        .def(
+            py::init<std::array<size_t, S::rank>, double, double>(),
+            "Array of material points.",
+            py::arg("shape"),
+            py::arg("K"),
+            py::arg("G"))
 
         .def("shape", &S::shape, "Shape of array.")
         .def("I2", &S::I2, "Array with 2nd-order unit tensors.")
@@ -81,8 +82,7 @@ void add_epseq_overloads(T& module)
 {
     module.def(
         "Epseq",
-        static_cast<R (*)(const S&)>(
-            &GMatElastic::Cartesian3d::Epseq<S>),
+        static_cast<R (*)(const S&)>(&GMatElastic::Cartesian3d::Epseq<S>),
         "Equivalent strain of a(n) (array of) tensor(s).",
         py::arg("A"));
 }
@@ -92,8 +92,7 @@ void add_sigeq_overloads(T& module)
 {
     module.def(
         "Sigeq",
-        static_cast<R (*)(const S&)>(
-            &GMatElastic::Cartesian3d::Sigeq<S>),
+        static_cast<R (*)(const S&)>(&GMatElastic::Cartesian3d::Sigeq<S>),
         "Equivalent stress of a(n) (array of) tensor(s).",
         py::arg("A"));
 }
@@ -104,13 +103,9 @@ PYBIND11_MODULE(_GMatElastic, m)
 
     m.doc() = "Linear elastic material model";
 
-    m.def("version",
-          &GMatElastic::version,
-          "Return version string.");
+    m.def("version", &GMatElastic::version, "Return version string.");
 
-    m.def("version_dependencies",
-          &GMatElastic::version_dependencies,
-          "Return list of strings.");
+    m.def("version_dependencies", &GMatElastic::version_dependencies, "Return list of strings.");
 
     // -----------------------
     // GMatElastic.Cartesian3d
@@ -148,7 +143,11 @@ PYBIND11_MODULE(_GMatElastic, m)
 
     py::class_<SM::Elastic>(sm, "Elastic")
 
-        .def(py::init<double, double>(), "Linear elastic material point.", py::arg("K"), py::arg("G"))
+        .def(
+            py::init<double, double>(),
+            "Linear elastic material point.",
+            py::arg("K"),
+            py::arg("G"))
 
         .def("K", &SM::Elastic::K, "Returns the bulk modulus.")
         .def("G", &SM::Elastic::G, "Returns the shear modulus.")
