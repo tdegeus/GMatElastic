@@ -5,7 +5,7 @@ on:
   pull_request:
   push:
     branches:
-    - master
+    - main
 
 jobs:
 
@@ -17,7 +17,7 @@ jobs:
         runs-on: [ubuntu-latest, macos-latest, windows-latest]
         include:
         - runs-on: ubuntu-latest
-          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=1 -DBUILD_EXAMPLES=1 -DBUILD_DOCS=0
+          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=1
           prop: tests, examples & docs
         - runs-on: macos-latest
           config: -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=1
@@ -47,16 +47,17 @@ jobs:
     - name: Set dummy version
       run: echo "SETUPTOOLS_SCM_PRETEND_VERSION=0.0" >> $GITHUB_ENV
 
-    - name: Install clang
-      if: runner.os == 'Windows'
-      run: micromamba install -c conda-forge clang_win-64 ninja
-
-    - name: Configure using CMake (!Windows)
+    - name: Configure using CMake
       run: cmake -Bbuild ${{ matrix.config }}
 
     - name: Build C++ ${{ matrix.prop }}
       working-directory: build
       run: cmake --build .
+
+    - name: Build doxygen-docs (error on warning)
+      if: runner.os == 'Linux'
+      working-directory: build
+      run: make html
 
     - name: Run C++ ${{ matrix.prop }}
       working-directory: build

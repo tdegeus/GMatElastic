@@ -201,7 +201,6 @@ if(BUILD_DOCS OR BUILD_ALL)
 
     set(${PROJECT_NAME}_DOCS_STRIP_INC
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
-        "${GMatElastic_STRIP}"
         "${GMatTensor_STRIP}")
 
     list(REMOVE_DUPLICATES ${PROJECT_NAME}_DOCS_STRIP)
@@ -226,6 +225,6 @@ if(BUILD_DOCS OR BUILD_ALL)
 
     set(DOXYGEN_STRIP_FROM_INC_PATH ${${PROJECT_NAME}_DOCS_STRIP_INC})
     set(DOXYGEN_STRIP_FROM_PATH ${${PROJECT_NAME}_DOCS_STRIP})
-    doxygen_add_docs(docs ${${PROJECT_NAME}_DOCS_INCL})
+    doxygen_add_docs(html ${${PROJECT_NAME}_DOCS_INCL})
 
 endif()

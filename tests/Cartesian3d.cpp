@@ -193,7 +193,7 @@ TEST_CASE("GMatElastic::Cartesian3d", "Cartesian3d.h")
         for (size_t e = 0; e < nelem; ++e) {
             for (size_t q = 0; q < nip; ++q) {
                 double fac = static_cast<double>((e + 1) * nip + (q + 1));
-                auto model = mat.getElastic({e, q});
+                auto model = mat.crefElastic({e, q});
                 model.setStrain(xt::eval(fac * Eps));
                 REQUIRE(xt::allclose(model.Stress(), fac * Sig));
             }

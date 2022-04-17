@@ -1,7 +1,7 @@
-/*
-
-(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastic
-
+/**
+\file
+\copyright Copyright. Tom de Geus. All rights reserved.
+\license This project is released under the MIT License.
 */
 
 #ifndef GMATELASTIC_CARTESIAN3D_HPP
@@ -20,7 +20,8 @@ inline void epseq(const T& A, U& ret)
 }
 
 template <class T>
-inline auto Epseq(const T& A)
+inline auto Epseq(const T& A) ->
+    typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type
 {
     return xt::eval(std::sqrt(2.0 / 3.0) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
 }
@@ -33,7 +34,8 @@ inline void sigeq(const T& A, U& ret)
 }
 
 template <class T>
-inline auto Sigeq(const T& A)
+inline auto Sigeq(const T& A) ->
+    typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type
 {
     return xt::eval(std::sqrt(1.5) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
 }
