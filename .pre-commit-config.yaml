@@ -4,11 +4,14 @@ repos:
   hooks:
   - id: black
     args: [--safe, --quiet, --line-length=100]
+    exclude: ^docs/doxystyle
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.2.0
   hooks:
   - id: trailing-whitespace
+    exclude: ^docs/doxystyle
   - id: end-of-file-fixer
+    exclude: ^docs/doxystyle
   - id: check-yaml
   - id: debug-statements
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
@@ -44,3 +47,4 @@ repos:
   hooks:
   - id: clang-format
     args: [-i]
+    exclude: ^docs/doxystyle

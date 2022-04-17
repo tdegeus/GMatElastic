@@ -53,7 +53,7 @@ class Test_main(unittest.TestCase):
         mat = GMat.Array2d([nelem, nip])
         ndim = 3
 
-        iden = np.ones([nelem, nip], dtype="int")
+        iden = np.ones([nelem, nip], dtype=bool)
         mat.setElastic(iden, K, G)
 
         eps = np.zeros((nelem, nip, ndim, ndim))
