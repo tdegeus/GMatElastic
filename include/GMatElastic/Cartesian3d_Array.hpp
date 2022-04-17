@@ -37,7 +37,7 @@ inline xt::xtensor<double, N> Array<N>::K() const
 {
     xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Unset:
@@ -57,7 +57,7 @@ inline xt::xtensor<double, N> Array<N>::G() const
 {
     xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Unset:
@@ -107,7 +107,7 @@ inline void Array<N>::setStrain(const xt::xtensor<double, N + 2>& arg)
 {
     GMATELASTIC_ASSERT(xt::has_shape(arg, m_shape_tensor2));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Unset:
@@ -124,7 +124,7 @@ inline void Array<N>::strain(xt::xtensor<double, N + 2>& ret) const
 {
     GMATELASTIC_ASSERT(xt::has_shape(ret, m_shape_tensor2));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Unset:
@@ -142,7 +142,7 @@ inline void Array<N>::stress(xt::xtensor<double, N + 2>& ret) const
 {
     GMATELASTIC_ASSERT(xt::has_shape(ret, m_shape_tensor2));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Unset:
@@ -160,7 +160,7 @@ inline void Array<N>::tangent(xt::xtensor<double, N + 4>& ret) const
 {
     GMATELASTIC_ASSERT(xt::has_shape(ret, m_shape_tensor4));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Unset:
