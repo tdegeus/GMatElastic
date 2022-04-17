@@ -40,6 +40,7 @@ conveniently compiled to this [PDF](docs/readme.pdf).
 - [Upgrading instructions](#upgrading-instructions)
     - [Upgrading to >v0.2.*](#upgrading-to-v02)
 - [Change-log](#change-log)
+    - [v0.3.0](#v030)
     - [v0.2.2](#v022)
     - [v0.2.1](#v021)
     - [v0.2.0](#v020)
@@ -426,6 +427,10 @@ This requires the following changes:
     - `tangent`: no argument, single return value (no longer returns stress).
 
 # Change-log
+
+## v0.3.0
+
+*   Update to new GMat API (#25). This exposes non-allocation API in Python.
 
 ## v0.2.2
 
