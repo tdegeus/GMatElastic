@@ -18,13 +18,10 @@ jobs:
         include:
         - runs-on: ubuntu-latest
           config: -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=1
-          prop: tests, examples & docs
         - runs-on: macos-latest
-          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=1
-          prop: tests
+          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=1
         - runs-on: windows-latest
-          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=1 -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-          prop: tests
+          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=1 -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
 
     defaults:
       run:
@@ -43,6 +40,9 @@ jobs:
       with:
         environment-file: environment.yaml
         environment-name: myenv
+        extra-specs: |
+          sel(linux): cxx-compiler
+          sel(win): clang_win-64
 
     - name: Set dummy version
       run: echo "SETUPTOOLS_SCM_PRETEND_VERSION=0.0" >> $GITHUB_ENV
@@ -50,25 +50,16 @@ jobs:
     - name: Configure using CMake
       run: cmake -Bbuild ${{ matrix.config }}
 
-    - name: Build C++ ${{ matrix.prop }}
-      working-directory: build
-      run: cmake --build .
-
     - name: Build doxygen-docs (error on warning)
       if: runner.os == 'Linux'
       working-directory: build
       run: make html
 
-    - name: Run C++ ${{ matrix.prop }}
-      working-directory: build
-      run: ctest --output-on-failure
-
     - name: Build and install Python module
-      run: python setup.py install --build-type Release -vv
+      run: python -m pip install . -v
 
     - name: Run Python tests
-      working-directory: tests
-      run: python Cartesian3d.py
+      run: python -m unittest discover tests
 
     - name: Generate consistency data based on current commit
       if: runner.os == 'Linux'
@@ -76,6 +67,13 @@ jobs:
       run: |
         python Cartesian3d_generate.py
         python Cartesian3d_check_main.py
+
+    - name: Check consistency with v0.2.2
+      if: runner.os == 'Linux'
+      working-directory: tests/compare_versions
+      run: |
+        micromamba install -c conda-forge python-gmatelastic=0.2.2
+        python Cartesian3d_check_v0.2.2.py
 
     - name: Check consistency with v0.1.0
       if: runner.os == 'Linux'

@@ -6,47 +6,6 @@ Linear elastic material model.
 An overview of the theory can be found in `docs/readme.tex`
 conveniently compiled to this [PDF](docs/readme.pdf).
 
-# Contents
-
-<!-- MarkdownTOC levels="1,2,3" -->
-
-- [Disclaimer](#disclaimer)
-- [Implementation](#implementation)
-    - [C++ and Python](#c-and-python)
-    - [Cartesian3d](#cartesian3d)
-        - [Overview](#overview)
-        - [Example](#example)
-        - [Function names](#function-names)
-        - [Storage](#storage)
-    - [Debugging](#debugging)
-- [Installation](#installation)
-    - [C++ headers](#c-headers)
-        - [Using conda](#using-conda)
-        - [From source](#from-source)
-    - [Python module](#python-module)
-        - [Using conda](#using-conda-1)
-        - [From source](#from-source-1)
-- [Compiling](#compiling)
-    - [Using CMake](#using-cmake)
-        - [Example](#example-1)
-        - [Targets](#targets)
-        - [Optimisation](#optimisation)
-    - [By hand](#by-hand)
-    - [Using pkg-config](#using-pkg-config)
-- [Testing](#testing)
-    - [Basic testing](#basic-testing)
-    - [Extensive testing](#extensive-testing)
-- [References / Credits](#references--credits)
-- [Upgrading instructions](#upgrading-instructions)
-    - [Upgrading to >v0.2.*](#upgrading-to-v02)
-- [Change-log](#change-log)
-    - [v0.3.0](#v030)
-    - [v0.2.2](#v022)
-    - [v0.2.1](#v021)
-    - [v0.2.0](#v020)
-
-<!-- /MarkdownTOC -->
-
 # Disclaimer
 
 This library is free to use under the
@@ -66,178 +25,29 @@ Download:
 T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me |
 [github.com/tdegeus/GMatElastic](https://github.com/tdegeus/GMatElastic)
 
-# Implementation
+# Python implementation
 
-## C++ and Python
+## Partial example
 
-The code is a C++ header-only library (see [installation notes](#c-headers)),
-but a Python module is also provided (see [installation notes](#python-module))
-with an identical API (note that all `::` in C++ are `.` in Python).
+```python
+import GMatLinearElastic.Cartesian3d as GMat
 
-## Cartesian3d
+shape = [...]
+K = np.empty(shape)
+G = np.empty(shape)
+...
 
-[Cartesian3d.h](include/GMatLinearElastic/Cartesian3d.h)
+GMat.ElasticXd model(K, G);
+...
 
-### Overview
+Eps = np.empty(shape + [3, 3])
+...
 
-At the material point level to model is implemented in the class:
-
-+   `Elastic`: linear elastic material model.
-
-There is an `Array` class that allows you to
-have a single API for an array of material points.
-
->   Note that all strain tensors are presumed symmetric.
->   No checks are made to ensure this.
-
-### Example
-
-Only a partial examples are presented here, meant to understand the code's structure.
-
-#### Individual material point
-
-```cpp
-#include <GMatLinearElastic/Cartesian3d.h>
-
-namespace GMat = GMatLinearElastic::Cartesian3d;
-
-int main()
-{
-    // a single material point
-    GMat::Elastic model(K, G);
-    ...
-
-    // set strain (follows e.g. from FEM discretisation)
-    xt::xtensor<double, 2> Eps;
-    ...
-    model.setStrain(Eps);
-    ...
-
-    // compute stress (including allocation of the result)
-    auto Sig = elastic.Stress();
-    // OR compute stress without (re)allocating the results
-    // in this case "Sig" has to be of the correct type and shape
-    model.stress(Sig);
-    ...
-
-    return 0;
-}
+model.Eps = Eps
+print(model.Sig)
 ```
 
-#### Array of material points
-
-```cpp
-#include <GMatLinearElastic/Cartesian3d.h>
-
-namespace GMat = GMatLinearElastic::Cartesian3d;
-
-int main()
-{
-    size_t ndim = 3;
-
-    // array, of shape [nelem, nip], of material points
-    GMat::Array<2> array({nelem, nip});
-
-    // set materials:
-    // points where I(x,y) == 1 are assigned, points where I(x,y) == 0 are skipped
-    // all points can only be assigned once
-    array.setElastic(I, K, G);
-    ...
-
-    // set strain tensor (follows e.g. from FEM discretisation)
-    xt::xtensor<double, 4> eps = xt::empty<double>({nelem, nip, ndim, ndim});
-    ...
-    array.setStrain(eps);
-
-    // compute stress (allocate result)
-    xt::xtensor<double, 4> sig = array.Stress();
-    // OR compute stress without (re)allocating the results
-    // in this case "sig" has to be of the correct type and shape
-    array.stress(sig);
-    ...
-
-    return 0;
-}
-```
-
-### Function names
-
-+   Functions whose name starts with a capital letter (e.g. `Stress`)
-    return their result (allocating it internally).
-+   Functions whose name starts with a small letter (e.g. `stress`)
-    write to the, fully allocated, last input argument(s)
-    (avoiding re-allocation, but making the user responsible to do it properly).
-
-### Storage
-
-+   Scalar
-    ```cpp
-    double
-    ```
-    or
-    ```cpp
-    xt::xtensor<double, 0>
-    ```
-
-+   Tensors
-    ```cpp
-    xt:xtensor<double, 2> // 2nd-order tensor
-    xt:xtensor<double, 4> // 4th-order tensor
-    ```
-
-+   List *(i)* of second order tensors *(x,y)* : *A(i,x,y)*
-    ```cpp
-    xt::xtensor<double, 3>
-    ```
-    Note that the shape is `[I, 3, 3]`.
-
-+   Matrix *(i,j)* of second order tensors *(x,y)* : *A(i,j,x,y)*
-    ```cpp
-    xt::xtensor<double, 4>
-    ```
-    Note that the shape is `[I, J, 3, 3]`.
-
-## Debugging
-
-To enable assertions define `GMATELASTIC_ENABLE_ASSERT`
-**before** including *GMatElastic* for the first time.
-
-Using *CMake* this can be done using the `GMatElastic::assert` target
-(see [below](#using-cmake)).
-
->   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT`
->   **before** including *xtensor* (and *GMatElastic*) for the first time.
->
->   Using *CMake* all assertions are enabled using the `GMatElastic::debug` target
->   (see [below](#using-cmake)).
-
->   The library's assertions are enabled in the Python interface,
->   but debugging with *xtensor* is disabled.
-
-# Installation
-
-## C++ headers
-
-### Using conda
-
-```bash
-conda install -c conda-forge gmatelastic
-```
-
-### From source
-
-```bash
-# Download GMatElastic
-git checkout https://github.com/tdegeus/GMatElastic.git
-cd GMatElastic
-
-# Install headers, CMake and pkg-config support
-cmake -Bbuild
-cd build
-cmake --install .
-```
-
-## Python module
+## Installation
 
 ### Using conda
 
@@ -272,13 +82,77 @@ export SKBUILD_CONFIGURE_OPTIONS="-DUSE_SIMD=1"
 python -m pip install . -v
 ```
 
-# Compiling
+# C++ implementation
+
+## Partial example
+
+```cpp
+#include <GMatLinearElastic/Cartesian3d.h>
+
+namespace GMat = GMatLinearElastic::Cartesian3d;
+
+int main()
+{
+    static const size_t rank = ...;
+
+    xt::xtensor<double, rank> K = ...;
+    xt::xtensor<double, rank> G = ...;
+
+    GMat::ElasticXd model(K, G);
+    ...
+
+    xt::xtensor<double, rank + 2> Eps;
+    ...
+
+    // all necessary computation are done at this point
+    model.set_Eps(Eps);
+    ...
+
+    // get reference to stress
+    auto Sig = elastic.Sig();
+
+    return 0;
+}
+```
+
+## Debugging
+
+To enable assertions define `GMATELASTIC_ENABLE_ASSERT`
+**before** including *GMatElastic* for the first time.
+
+Using *CMake* this can be done using the `GMatElastic::assert` target.
+
+>   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT`
+>   **before** including *xtensor* (and *GMatElastic*) for the first time.
+>
+>   Using *CMake* all assertions are enabled using the `GMatElastic::debug` target.
+
+## Installation
+
+### Using conda
+
+```bash
+conda install -c conda-forge gmatelastic
+```
+
+### From source
+
+```bash
+git checkout https://github.com/tdegeus/GMatElastic.git
+cd GMatElastic
+
+cmake -Bbuild
+cd build
+cmake --install .
+```
+
+## Compiling
 
 ## Using CMake
 
 ### Example
 
-Using *GMatElastic* your `CMakeLists.txt` can be as follows
+Your `CMakeLists.txt` can be as follows
 
 ```cmake
 cmake_minimum_required(VERSION 3.1)
@@ -307,7 +181,7 @@ The following targets are available:
 
 ### Optimisation
 
-It is advised to think about compiler optimization and enabling *xsimd*.
+It is advised to think about compiler optimisation and enabling *xsimd*.
 Using *CMake* this can be done using the `xtensor::optimize` and `xtensor::use_xsimd` targets.
 The above example then becomes:
 
@@ -322,7 +196,7 @@ target_link_libraries(example PRIVATE
     xtensor::use_xsimd)
 ```
 
-See the [documentation of xtensor](https://xtensor.readthedocs.io/en/latest/) concerning optimization.
+See the [documentation of xtensor](https://xtensor.readthedocs.io/en/latest/) concerning optimisation.
 
 ## By hand
 
@@ -332,7 +206,7 @@ Presuming that the compiler is `c++`, compile using:
 c++ -I/path/to/GMatElastic/include ...
 ```
 
-Note that you have to take care of the *xtensor* dependency, the C++ version, optimization,
+Note that you have to take care of the *xtensor* dependency, the C++ version, optimisation,
 enabling *xsimd*, ...
 
 ## Using pkg-config
@@ -346,49 +220,32 @@ c++ `pkg-config --cflags GMatElastic` ...
 Note that you have to take care of the *xtensor* dependency, the C++ version, optimization,
 enabling *xsimd*, ...
 
-# Testing
-
-## Basic testing
-
->   Run by the continuous integration
-
-```
-cmake -Bbuild -DBUILD_TESTS=1
-cmake --build .
-ctest --output-on-failure
-```
-
-## Extensive testing
-
->   Run by the continuous integration.
->   See [ci.yaml](.github/workflows/ci.yml) for details.
-
-To make sure that the current version in up-to-date with old versions,
-one starts by generating a set or random states using the current version:
-
-```
-cd test/compare_versions
-python Cartesian3d_generate.py
-```
-
-And then checks that the generated states are also found with previous
-versions:
-
-```
-git checkout tags/v0.1.0
-python -m pip install . -v
-python Cartesian3d_check_v0.1.0.py
-```
-
-etc.
-
-See [ci.yaml](.github/workflows/ci.yml) for details.
-
-# References / Credits
-
-+   [xtensor](https://github.com/QuantStack/xtensor) is used under the hood.
-
 # Upgrading instructions
+
+## Upgrading to >v0.3.*
+
+The individual material point and the array of material points was fully integrated.
+In addition, the number of copies was reduced.
+
+### C++
+
+There is only a single class `Elastic`. It's functions where renamed:
+
+*   `.setStrain(...)` -> `.set_Eps(...)`
+*   `.Stress()` -> `.Sig()` (now returns a reference).
+*   `.stress(...)`: deprecated.
+*   `.Tangent()` -> `.C()` (now returns a reference).
+*   `.tangent(...)`: deprecated.
+
+### C++
+
+There is only a single class `Elastic`. It's functions are converted to properties:
+
+*   `.setStrain(...)` -> `.Eps = ...`
+*   `.Stress()` -> `.Sig` (now returns a reference).
+*   `.stress(...)`: deprecated.
+*   `.Tangent()` -> `.C` (now returns a reference).
+*   `.tangent(...)`: deprecated.
 
 ## Upgrading to >v0.2.*
 
@@ -422,7 +279,7 @@ This requires the following changes:
 
 *   Strain is now stored as a member.
     Functions like `stress` now return the state based on the last specified strain,
-    specified using `setStrain(Esp)`. This leads to the following changes:
+    specified using `set_Eps(Esp)`. This leads to the following changes:
     - `stress`: no argument.
     - `tangent`: no argument, single return value (no longer returns stress).
 
@@ -430,7 +287,7 @@ This requires the following changes:
 
 ## v0.3.0
 
-*   Update to new GMat API (#25). This exposes non-allocation API in Python.
+Complete API overhaul.
 
 ## v0.2.2
 
@@ -456,7 +313,7 @@ This requires the following changes:
 
 *   Strain is now stored as a member.
     Functions like `stress` now return the state based on the last specified strain,
-    specified using `setStrain(Esp)`. This leads to the following changes:
+    specified using `set_Eps(Esp)`. This leads to the following changes:
     - `stress`: no argument.
     - `tangent`: no argument, single return value (no longer returns stress).
 

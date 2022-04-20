@@ -10,40 +10,14 @@
 #include <GMatTensor/Cartesian3d.h>
 
 #include "config.h"
+#include "version.h"
 
 namespace GMatElastic {
 
 /**
 Implementation in a 3-d Cartesian coordinate frame.
-
-Note that for convenience this namespace include aliases to:
--   GMatTensor::Cartesian3d::Deviatoric()
--   GMatTensor::Cartesian3d::deviatoric()
--   GMatTensor::Cartesian3d::Hydrostatic()
--   GMatTensor::Cartesian3d::hydrostatic()
--   GMatTensor::Cartesian3d::I2()
--   GMatTensor::Cartesian3d::I4()
--   GMatTensor::Cartesian3d::I4d()
--   GMatTensor::Cartesian3d::I4rt()
--   GMatTensor::Cartesian3d::I4s()
--   GMatTensor::Cartesian3d::II()
--   GMatTensor::Cartesian3d::O2()
--   GMatTensor::Cartesian3d::O4()
 */
 namespace Cartesian3d {
-
-using GMatTensor::Cartesian3d::deviatoric;
-using GMatTensor::Cartesian3d::Deviatoric;
-using GMatTensor::Cartesian3d::hydrostatic;
-using GMatTensor::Cartesian3d::Hydrostatic;
-using GMatTensor::Cartesian3d::I2;
-using GMatTensor::Cartesian3d::I4;
-using GMatTensor::Cartesian3d::I4d;
-using GMatTensor::Cartesian3d::I4rt;
-using GMatTensor::Cartesian3d::I4s;
-using GMatTensor::Cartesian3d::II;
-using GMatTensor::Cartesian3d::O2;
-using GMatTensor::Cartesian3d::O4;
 
 /**
 Von Mises equivalent strain: norm of strain deviator
@@ -56,8 +30,10 @@ To write to allocated data use epseq().
 \return [...] array.
 */
 template <class T>
-inline auto Epseq(const T& A) ->
-    typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type;
+inline auto Epseq(const T& A) -> typename GMatTensor::allocate<xt::get_rank<T>::value - 2, T>::type
+{
+    return xt::eval(std::sqrt(2.0 / 3.0) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
+}
 
 /**
 Same as epseq(), but writes to externally allocated output.
@@ -66,7 +42,11 @@ Same as epseq(), but writes to externally allocated output.
 \param ret output [...] array
 */
 template <class T, class U>
-inline void epseq(const T& A, U& ret);
+inline void epseq(const T& A, U& ret)
+{
+    GMatTensor::Cartesian3d::norm_deviatoric(A, ret);
+    ret *= std::sqrt(2.0 / 3.0);
+}
 
 /**
 Von Mises equivalent stress: norm of strain deviator
@@ -79,8 +59,10 @@ To write to allocated data use sigeq().
 \return [...] array.
 */
 template <class T>
-inline auto Sigeq(const T& A) ->
-    typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type;
+inline auto Sigeq(const T& A) -> typename GMatTensor::allocate<xt::get_rank<T>::value - 2, T>::type
+{
+    return xt::eval(std::sqrt(1.5) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
+}
 
 /**
 Same as Sigeq(), but writes to externally allocated output.
@@ -89,287 +71,24 @@ Same as Sigeq(), but writes to externally allocated output.
 \param ret output [...] array
 */
 template <class T, class U>
-inline void sigeq(const T& A, U& ret);
+inline void sigeq(const T& A, U& ret)
+{
+    GMatTensor::Cartesian3d::norm_deviatoric(A, ret);
+    ret *= std::sqrt(1.5);
+}
 
 /**
-Elastic material point.
-*/
-class Elastic {
-public:
-    Elastic() = default;
-
-    /**
-    Constructor.
-
-    \param K Bulk modulus.
-    \param G Shear modulus.
-    */
-    Elastic(double K, double G);
-
-    /**
-    \return Bulk modulus.
-    */
-    double K() const;
-
-    /**
-    \return Shear modulus.
-    */
-    double G() const;
-
-    /**
-    \return Current potential energy.
-    */
-    double energy() const;
-
-    /**
-    Set the current strain tensor.
-
-    \param arg xtensor array [3, 3].
-    */
-    template <class T>
-    void setStrain(const T& arg);
-
-    /**
-    Same as setStrain(), but reads from a pointer assuming row-major storage (no bound check).
-
-    \param arg Pointer to array (xx, xy, xz, yx, yy, yz, zx, zy, zz).
-    */
-    template <class T>
-    void setStrainPtr(const T* arg);
-
-    /**
-    Get the current strain tensor.
-
-    \return [3, 3] array.
-    */
-    xt::xtensor<double, 2> Strain() const;
-
-    /**
-    Same as Strain(), but write to allocated data.
-
-    \param ret xtensor array [3, 3], overwritten.
-    */
-    template <class T>
-    void strain(T& ret) const;
-
-    /**
-    Same as Strain(), but write to a pointer assuming row-major storage (no bound check).
-
-    \param ret Pointer to array (xx, xy, xz, yx, yy, yz, zx, zy, zz), overwritten.
-    */
-    template <class T>
-    void strainPtr(T* ret) const;
-
-    /**
-    Get the current stress tensor.
-
-    \return [3, 3] array.
-    */
-    xt::xtensor<double, 2> Stress() const;
-
-    /**
-    Same as Stress(), but write to allocated data.
-
-    \param ret xtensor array [3, 3], overwritten.
-    */
-    template <class T>
-    void stress(T& ret) const;
-
-    /**
-    Same as Stress(), but write to a pointer assuming row-major storage (no bound check).
-
-    \param ret Pointer to array (xx, xy, xz, yx, yy, yz, zx, zy, zz), overwritten.
-    */
-    template <class T>
-    void stressPtr(T* ret) const;
-
-    /**
-    Get the tangent tensor (strain independent).
-
-    \return [3, 3, 3, 3] array.
-    */
-    xt::xtensor<double, 4> Tangent() const;
-
-    /**
-    Same as Tangent(), but write to allocated data.
-
-    \param ret xtensor array [3, 3, 3, 3], overwritten.
-    */
-    template <class T>
-    void tangent(T& ret) const;
-
-    /**
-    Same as Tangent(), but write to a pointer assuming row-major storage (no bound check).
-
-    \param ret Pointer to array of size 3 * 3 * 3 * 3, overwritten.
-    */
-    template <class T>
-    void tangentPtr(T* ret) const;
-
-private:
-    double m_K; ///< bulk modulus
-    double m_G; ///< shear modulus
-    std::array<double, 9> m_Eps; ///< strain tensor [xx, xy, xz, yx, yy, yz, zx, zy, zz]
-    std::array<double, 9> m_Sig; ///< stress tensor ,,
-};
-
-/**
-Material identifier.
-*/
-struct Type {
-    /**
-    Type value.
-    */
-    enum Value {
-        Unset, ///< Unset
-        Elastic, ///< See Elastic
-    };
-};
-
-/**
-Array of material points.
-
+Array of material points with a linear elastic constitutive response.
 \tparam N Rank of the array.
 */
 template <size_t N>
-class Array : public GMatTensor::Cartesian3d::Array<N> {
-public:
-    using GMatTensor::Cartesian3d::Array<N>::rank;
-
-    Array() = default;
-
-    /**
-    Basic constructor.
-    Note that before usage material properties still have to be assigned to all items.
-    This can be done per item or by groups of items, using:
-    -   setElastic()
-
-    \param shape The shape of the array.
-    */
-    Array(const std::array<size_t, N>& shape);
-
-    /**
-    Construct homogeneous system.
-
-    \param shape The shape of the array.
-    \param K Bulk modulus.
-    \param G Shear modulus.
-    */
-    Array(const std::array<size_t, N>& shape, double K, double G);
-
-    /**
-    \return Type-id per item. Follows order set in Type.
-    */
-    xt::xtensor<size_t, N> type() const;
-
-    /**
-    \return Per item, 1 if Elastic, otherwise 0.
-    */
-    xt::xtensor<bool, N> isElastic() const;
-
-    /**
-    \return Bulk modulus per item.
-    */
-    xt::xtensor<double, N> K() const;
-
-    /**
-    \return Shear modulus per item.
-    */
-    xt::xtensor<double, N> G() const;
-
-    /**
-    Set all items Elastic, specifying material parameters per item.
-
-    \tparam L e.g. `xt::xtensor<bool, N>`
-    \param I Per item, ``true`` to set Elastic, ``false`` to skip.
-    \param K Bulk modulus.
-    \param G Shear modulus.
-    */
-    template <class L>
-    void setElastic(const L& I, double K, double G);
-
-    /**
-    Set strain tensors.
-
-    \tparam T e.g. `xt::xtensor<double, N + 2>`
-    \param arg Strain tensor per item [shape(), 3, 3].
-    */
-    template <class T>
-    void setStrain(const T& arg);
-
-    /**
-    \return Strain tensor per item [shape(), 3, 3].
-    */
-    xt::xtensor<double, N + 2> Strain() const;
-
-    /**
-    Same as Strain(), but write to allocated data.
-
-    \tparam R e.g. `xt::xtensor<double, N + 2>`
-    \param ret [shape(), 3, 3], overwritten.
-    */
-    template <class R>
-    void strain(R& ret) const;
-
-    /**
-    \return Stress tensor per item [shape(), 3, 3].
-    */
-    xt::xtensor<double, N + 2> Stress() const;
-
-    /**
-    Same as Stress(), but write to allocated data.
-
-    \tparam R e.g. `xt::xtensor<double, N + 2>`
-    \param ret [shape(), 3, 3], overwritten.
-    */
-    template <class R>
-    void stress(R& ret) const;
-
-    /**
-    \return Tangent tensor per item [shape(), 3, 3, 3, 3].
-    */
-    xt::xtensor<double, N + 4> Tangent() const;
-
-    /**
-    Same as Tangent(), but write to allocated data.
-
-    \tparam R e.g. `xt::xtensor<double, N + 4>`
-    \param ret [shape(), 3, 3, 3, 3], overwritten.
-    */
-    template <class R>
-    void tangent(R& ret) const;
-
-    /**
-    Reference to the underlying Elastic model of an item.
-
-    \param index The index of the item.
-    \return Reference to the model.
-    */
-    Elastic& refElastic(const std::array<size_t, N>& index);
-
-    /**
-    Constant reference to the underlying Elastic model of an item.
-
-    \param index The index of the item.
-    \return Reference to the model.
-    */
-    const Elastic& crefElastic(const std::array<size_t, N>& index) const;
-
-private:
-    /**
-    Elastic material vectors: each item has one entry in one of the material vectors.
-    */
-    std::vector<Elastic> m_Elastic;
-
-    /**
-    Type of each entry, see Type.
-    */
-    xt::xtensor<size_t, N> m_type;
-
-    /**
-    Index in the relevant material vector (#m_Elastic)
-    */
-    xt::xtensor<size_t, N> m_index;
+class Elastic : public GMatTensor::Cartesian3d::Array<N> {
+protected:
+    array_type::tensor<double, N> m_K; ///< Bulk modulus per item.
+    array_type::tensor<double, N> m_G; ///< Shear modulus per item.
+    array_type::tensor<double, N + 2> m_Eps; ///< Strain tensor per item.
+    array_type::tensor<double, N + 2> m_Sig; ///< Stress tensor per item.
+    array_type::tensor<double, N + 4> m_C; ///< Tangent per item.
 
     using GMatTensor::Cartesian3d::Array<N>::m_ndim;
     using GMatTensor::Cartesian3d::Array<N>::m_stride_tensor2;
@@ -378,13 +97,194 @@ private:
     using GMatTensor::Cartesian3d::Array<N>::m_shape;
     using GMatTensor::Cartesian3d::Array<N>::m_shape_tensor2;
     using GMatTensor::Cartesian3d::Array<N>::m_shape_tensor4;
+
+public:
+    using GMatTensor::Cartesian3d::Array<N>::rank;
+
+    Elastic() = default;
+
+    /**
+    Construct system.
+    \param K Bulk modulus per item.
+    \param G Shear modulus per item.
+    */
+    template <class T>
+    Elastic(const T& K, const T& G)
+    {
+        GMATELASTIC_ASSERT(K.dimension() == N);
+        GMATELASTIC_ASSERT(xt::has_shape(K, G.shape()));
+        std::copy(K.shape().cbegin(), K.shape().cend(), m_shape.begin());
+        this->init(m_shape);
+
+        m_K = K;
+        m_G = G;
+        m_Eps = xt::zeros<double>(m_shape_tensor2);
+        m_Sig = xt::zeros<double>(m_shape_tensor2);
+        m_C = xt::empty<double>(m_shape_tensor4);
+
+#pragma omp parallel
+        {
+            auto C = xt::adapt(&m_C.flat(0), {m_ndim, m_ndim, m_ndim, m_ndim});
+            double K;
+            double G;
+            auto II = GMatTensor::Cartesian3d::II();
+            auto I4d = GMatTensor::Cartesian3d::I4d();
+
+#pragma omp for
+            for (size_t i = 0; i < m_size; ++i) {
+                C.reset_buffer(&m_C.flat(i * m_stride_tensor4), m_stride_tensor4);
+                K = m_K.flat(i);
+                G = m_G.flat(i);
+                C = K * II + 2.0 * G * I4d;
+            }
+        }
+    }
+
+    /**
+    Bulk modulus per item.
+    \return [shape()].
+    */
+    const array_type::tensor<double, N>& K() const
+    {
+        return m_K;
+    }
+
+    /**
+    Shear modulus per item.
+    \return [shape()].
+    */
+    const array_type::tensor<double, N>& G() const
+    {
+        return m_G;
+    }
+
+    /**
+    Set strain tensors.
+    Internally, this calls refresh() to update stress.
+    \tparam T e.g. `array_type::tensor<double, N + 2>`
+    \param arg Strain tensor per item [shape(), 3, 3].
+    */
+    template <class T>
+    void set_Eps(const T& arg)
+    {
+        GMATELASTIC_ASSERT(xt::has_shape(arg, m_shape_tensor2));
+        std::copy(arg.cbegin(), arg.cend(), m_Eps.begin());
+        this->refresh();
+    }
+
+    /**
+    Recompute stress from strain.
+
+    From C++, this function need **never** be called: the API takes care of this.
+
+    For Python, this function should **only** be called when you modify elements of Eps().
+    For example
+
+        mat.Eps[e, q, 0, 1] = value
+        ...
+        mat.refresh() # "Eps" was changed without "mat" knowing
+
+    Instead, if you write an nd-array, the API takes care of the refresh. I.e.
+
+        mat.Eps = new_Eps
+        # no further action needed, "mat" was refreshed
+
+    Note though that you can call this function as often as you like, you will only loose time.
+    */
+    void refresh()
+    {
+#pragma omp parallel for
+        for (size_t i = 0; i < m_size; ++i) {
+
+            double K = m_K.flat(i);
+            double G = m_G.flat(i);
+
+            const double* Eps = &m_Eps.flat(i * m_stride_tensor2);
+            double* Sig = &m_Sig.flat(i * m_stride_tensor2);
+
+            double epsm = GMatTensor::Cartesian3d::pointer::Hydrostatic(Eps);
+
+            Sig[0] = (3.0 * K - 2.0 * G) * epsm + 2.0 * G * Eps[0];
+            Sig[1] = 2.0 * G * Eps[1];
+            Sig[2] = 2.0 * G * Eps[2];
+            Sig[3] = 2.0 * G * Eps[3];
+            Sig[4] = (3.0 * K - 2.0 * G) * epsm + 2.0 * G * Eps[4];
+            Sig[5] = 2.0 * G * Eps[5];
+            Sig[6] = 2.0 * G * Eps[6];
+            Sig[7] = 2.0 * G * Eps[7];
+            Sig[8] = (3.0 * K - 2.0 * G) * epsm + 2.0 * G * Eps[8];
+        }
+    }
+
+    /**
+    Strain tensor per item.
+    \return [shape(), 3, 3].
+    */
+    const array_type::tensor<double, N + 2>& Eps() const
+    {
+        return m_Eps;
+    }
+
+    /**
+    Strain tensor per item.
+    The user is responsible for calling refresh() after modifying entries.
+    \return [shape(), 3, 3].
+    */
+    array_type::tensor<double, N + 2>& Eps()
+    {
+        return m_Eps;
+    }
+
+    /**
+    Stress tensor per item.
+    \return [shape(), 3, 3].
+    */
+    const array_type::tensor<double, N + 2>& Sig() const
+    {
+        return m_Sig;
+    }
+
+    /**
+    Tangent tensor per item.
+    \return [shape(), 3, 3, 3, 3].
+    */
+    const array_type::tensor<double, N + 4>& C() const
+    {
+        return m_C;
+    }
+
+    /**
+    Potential energy per item.
+    \return [shape()].
+    */
+    array_type::tensor<double, N> energy() const
+    {
+        array_type::tensor<double, N> ret = xt::empty<double>(m_shape);
+        namespace GT = GMatTensor::Cartesian3d::pointer;
+
+#pragma omp parallel for
+        for (size_t i = 0; i < m_size; ++i) {
+
+            double K = m_K.flat(i);
+            double G = m_G.flat(i);
+
+            const double* Eps = &m_Eps.flat(i * m_stride_tensor2);
+
+            std::array<double, m_stride_tensor2> Epsd;
+            double epsm = GT::Hydrostatic_deviatoric(Eps, &Epsd[0]);
+            double epsd = std::sqrt(0.5 * GT::A2s_ddot_B2s(&Epsd[0], &Epsd[0]));
+
+            double U = 3.0 * K * std::pow(epsm, 2.0);
+            double V = 2.0 * G * std::pow(epsd, 2.0);
+
+            ret.flat(i) = U + V;
+        }
+
+        return ret;
+    }
 };
 
 } // namespace Cartesian3d
 } // namespace GMatElastic
-
-#include "Cartesian3d.hpp"
-#include "Cartesian3d_Array.hpp"
-#include "Cartesian3d_Elastic.hpp"
 
 #endif
