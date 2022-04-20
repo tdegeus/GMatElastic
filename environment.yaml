@@ -1,16 +1,21 @@
 channels:
 - conda-forge
 dependencies:
-- catch2
+- breathe
 - cmake
 - doxygen
-- gmattensor
+- furo
+- gmattensor >=0.10.1
 - h5py
 - ninja
 - numpy
 - pybind11
 - python
+- python-gmattensor >0.9.0
 - scikit-build
 - setuptools_scm
-- xtensor
+- sphinx
+- sphinx-tabs
+- sphinx_rtd_theme
+- xtensor >=0.24.2
 - xtensor-python

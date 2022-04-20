@@ -8,9 +8,11 @@ import numpy as np
 class Test(unittest.TestCase):
     def test_main(self):
 
-        with h5py.File("Cartesian3d_random.hdf5", "r") as data:
+        with h5py.File("Cartesian3d_random.h5") as data:
 
-            shape = data["/shape"][...]
+            K = data["/model/K"][...]
+            G = data["/model/G"][...]
+            shape = K.shape
 
             i = np.eye(3)
             I4 = np.einsum("xy,ijkl->xyijkl", np.ones(shape), np.einsum("il,jk", i, i))
@@ -19,11 +21,11 @@ class Test(unittest.TestCase):
 
             mat = GMat.Matrix(shape[0], shape[1])
 
-            iden = data["/model/I"][...]
-            K = data["/model/K"][...]
-            G = data["/model/G"][...]
-
-            mat.setElastic(iden, K, G)
+            for i in range(shape[0]):
+                for j in range(shape[1]):
+                    iden = np.zeros(shape, dtype=bool)
+                    iden[i, j] = True
+                    mat.setElastic(iden, K[i, j], G[i, j])
 
             for i in range(20):
 
