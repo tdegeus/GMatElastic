@@ -1,6 +1,7 @@
 import unittest
 
 import GMatElastic.Cartesian3d as GMat
+import GMatTensor.Cartesian3d as tensor
 import h5py
 import numpy as np
 
@@ -8,25 +9,17 @@ import numpy as np
 class Test(unittest.TestCase):
     def test_main(self):
 
-        with h5py.File("Cartesian3d_random.hdf5", "r") as data:
+        with h5py.File("Cartesian3d_random.h5") as data:
 
-            mat = GMat.Array2d(data["/shape"][...])
-
-            iden = data["/model/I"][...]
-            K = data["/model/K"][...]
-            G = data["/model/G"][...]
-
-            mat.setElastic(iden, K, G)
+            mat = GMat.Elastic2d(data["/model/K"][...], data["/model/G"][...])
+            I4s = tensor.Array2d(mat.shape).I4s
 
             for i in range(20):
 
                 GradU = data[f"/random/{i:d}/GradU"][...]
-
-                Eps = np.einsum("...ijkl,...lk->...ij", mat.I4s(), GradU)
-                mat.setStrain(Eps)
-
-                self.assertTrue(np.allclose(mat.Stress(), data[f"/random/{i:d}/Stress"][...]))
-                self.assertTrue(np.allclose(mat.Tangent(), data[f"/random/{i:d}/Tangent"][...]))
+                mat.Eps = tensor.A4_ddot_B2(I4s, GradU)
+                self.assertTrue(np.allclose(mat.Sig, data[f"/random/{i:d}/Stress"][...]))
+                self.assertTrue(np.allclose(mat.C, data[f"/random/{i:d}/Tangent"][...]))
 
 
 if __name__ == "__main__":

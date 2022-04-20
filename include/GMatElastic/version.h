@@ -37,13 +37,13 @@ overwrite the automatic version.
 namespace GMatElastic {
 
 /**
-Return version string, e.g.
-
-    "0.8.0"
-
-\return std::string
+Return version string, e.g. `"0.8.0"`
+\return Version string.
 */
-inline std::string version();
+inline std::string version()
+{
+    return GMatTensor::detail::unquote(std::string(QUOTE(GMATELASTIC_VERSION)));
+}
 
 /**
 Return versions of this library and of all of its dependencies.
@@ -55,10 +55,20 @@ The output is a list of strings:
 
 \return List of strings.
 */
-inline std::vector<std::string> version_dependencies();
+inline std::vector<std::string> version_dependencies()
+{
+    return GMatTensor::version_dependencies();
+}
+
+/**
+Return information on the compiler, the platform, the C++ standard, and the compilation data.
+\return List of strings.
+*/
+inline std::vector<std::string> version_compiler()
+{
+    return GMatTensor::version_compiler();
+}
 
 } // namespace GMatElastic
-
-#include "version.hpp"
 
 #endif
