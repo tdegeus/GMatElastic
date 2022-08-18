@@ -64,8 +64,7 @@ To enable them you have to compile on your system, as is discussed next.
 >   The easiest is to use *conda* to get the prerequisites:
 >
 >   ```bash
->   conda install -c conda-forge xtensor-python
->   conda install -c conda-forge xsimd
+>   conda install -c conda-forge xtensor xsimd xtensor-python
 >   ```
 >
 >   If you then compile and install with the same environment you should be good to go.
@@ -237,7 +236,7 @@ There is only a single class `Elastic`. It's functions where renamed:
 *   `.Tangent()` -> `.C()` (now returns a reference).
 *   `.tangent(...)`: deprecated.
 
-### C++
+### Python
 
 There is only a single class `Elastic`. It's functions are converted to properties:
 
