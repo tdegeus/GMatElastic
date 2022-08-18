@@ -221,7 +221,7 @@ enabling *xsimd*, ...
 
 # Upgrading instructions
 
-## Upgrading to >v0.3.*
+## Upgrading to >v0.4.*
 
 The individual material point and the array of material points was fully integrated.
 In addition, the number of copies was reduced.
@@ -283,6 +283,10 @@ This requires the following changes:
     - `tangent`: no argument, single return value (no longer returns stress).
 
 # Change-log
+
+## v0.4.0
+
+Complete API overhaul.
 
 ## v0.3.0
 
