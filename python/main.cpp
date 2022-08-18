@@ -130,11 +130,6 @@ PYBIND11_MODULE(_GMatElastic, m)
         &GMatElastic::version_dependencies,
         "List of version strings, include dependencies.");
 
-    m.def(
-        "version_compiler",
-        &GMatElastic::version_compiler,
-        "Information on the compiler, the platform, the C++ standard, and the compilation data.");
-
     // -----------------------
     // GMatElastic.Cartesian3d
     // -----------------------

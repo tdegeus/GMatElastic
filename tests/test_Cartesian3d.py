@@ -48,7 +48,7 @@ class Test_main(unittest.TestCase):
         self.assertTrue(np.allclose(tensor.A4_ddot_B2(mat.C, mat.Eps), Sig))
         self.assertTrue(np.allclose(mat.energy, 3 * K * epsm**2 + 2 * G * gamma**2))
 
-    def test_tangent(self):
+    def test_Elastic_tangent(self):
 
         shape = [2, 3]
         Eps = np.random.random(shape + [3, 3])
