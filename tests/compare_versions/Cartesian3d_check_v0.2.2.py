@@ -10,8 +10,8 @@ class Test(unittest.TestCase):
 
         with h5py.File("Cartesian3d_random.h5") as data:
 
-            K = data["/model/K"][...]
-            G = data["/model/G"][...]
+            K = data["K"][...]
+            G = data["G"][...]
             mat = GMat.Array2d(K.shape)
 
             for i in range(K.shape[0]):
@@ -22,13 +22,11 @@ class Test(unittest.TestCase):
 
             for i in range(20):
 
-                GradU = data[f"/random/{i:d}/GradU"][...]
-
-                Eps = np.einsum("...ijkl,...lk->...ij", mat.I4s(), GradU)
+                Eps = data[f"/data/{i:d}/Eps"][...]
                 mat.setStrain(Eps)
 
-                self.assertTrue(np.allclose(mat.Stress(), data[f"/random/{i:d}/Stress"][...]))
-                self.assertTrue(np.allclose(mat.Tangent(), data[f"/random/{i:d}/Tangent"][...]))
+                self.assertTrue(np.allclose(mat.Stress(), data[f"/data/{i:d}/Stress"][...]))
+                self.assertTrue(np.allclose(mat.Tangent(), data[f"/data/{i:d}/Tangent"][...]))
 
 
 if __name__ == "__main__":
