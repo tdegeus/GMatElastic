@@ -108,7 +108,7 @@ int main()
     ...
 
     // get reference to stress
-    auto Sig = elastic.Sig();
+    auto Sig = model.Sig();
 
     return 0;
 }
