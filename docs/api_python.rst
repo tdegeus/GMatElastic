@@ -16,6 +16,7 @@ Summary
    GMatElastic.Cartesian3d.Elastic0d
    GMatElastic.Cartesian3d.Elastic1d
    GMatElastic.Cartesian3d.Elastic2d
+   GMatElastic.Cartesian3d.Elastic3d
 
 Details
 -------
