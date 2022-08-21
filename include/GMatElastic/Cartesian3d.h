@@ -191,7 +191,7 @@ public:
 
     Note though that you can call this function as often as you like, you will only loose time.
     */
-    void refresh()
+    virtual void refresh()
     {
 #pragma omp parallel for
         for (size_t i = 0; i < m_size; ++i) {
@@ -257,7 +257,7 @@ public:
     Potential energy per item.
     \return [shape()].
     */
-    array_type::tensor<double, N> energy() const
+    virtual array_type::tensor<double, N> energy() const
     {
         array_type::tensor<double, N> ret = xt::empty<double>(m_shape);
         namespace GT = GMatTensor::Cartesian3d::pointer;
