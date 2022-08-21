@@ -124,7 +124,7 @@ public:
 
 #pragma omp parallel
         {
-            auto C = xt::adapt(&m_C.flat(0), {m_ndim, m_ndim, m_ndim, m_ndim});
+            auto C = xt::adapt(m_C.data(), {m_ndim, m_ndim, m_ndim, m_ndim});
             double K;
             double G;
             auto II = GMatTensor::Cartesian3d::II();
