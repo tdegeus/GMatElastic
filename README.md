@@ -1,10 +1,14 @@
 # GMatLinearElastic
 
 [![CI](https://github.com/tdegeus/GMatElastic/workflows/CI/badge.svg)](https://github.com/tdegeus/GMatElastic/actions)
+[![Doxygen -> gh-pages](https://github.com/tdegeus/GMatElastic/workflows/gh-pages/badge.svg)](https://tdegeus.github.io/GMatElastic)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/gmatelastic.svg)](https://anaconda.org/conda-forge/gmatelastic)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/python-gmatelastic.svg)](https://anaconda.org/conda-forge/python-gmatelastic)
+
 
 Linear elastic material model.
-An overview of the theory can be found in `docs/readme.tex`
-conveniently compiled to this [PDF](docs/readme.pdf).
+An overview of the theory can be found in `docs/theory/readme.tex`
+conveniently compiled to this [PDF](docs/theory/readme.pdf).
 
 # Disclaimer
 
