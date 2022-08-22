@@ -111,6 +111,18 @@ public:
     template <class T>
     Elastic(const T& K, const T& G)
     {
+        this->init_Elastic(K, G);
+    }
+
+protected:
+    /**
+    Construct system.
+    \param K Bulk modulus per item.
+    \param G Shear modulus per item.
+    */
+    template <class T>
+    void init_Elastic(const T& K, const T& G)
+    {
         GMATELASTIC_ASSERT(K.dimension() == N);
         GMATELASTIC_ASSERT(xt::has_shape(K, G.shape()));
         std::copy(K.shape().cbegin(), K.shape().cend(), m_shape.begin());
@@ -140,6 +152,7 @@ public:
         }
     }
 
+public:
     /**
     Bulk modulus per item.
     \return [shape()].

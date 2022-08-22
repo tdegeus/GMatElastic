@@ -19,10 +19,8 @@
 
 namespace py = pybind11;
 
-namespace my3d {
-
 template <class S, class T>
-auto Elastic(T& cls)
+auto init_Elastic(T& cls)
 {
     cls.def(
         py::init<const xt::pytensor<double, S::rank>&, const xt::pytensor<double, S::rank>&>(),
@@ -50,7 +48,7 @@ auto Elastic(T& cls)
 }
 
 template <class R, class T, class M>
-void Epseq(M& mod)
+void init_Epseq(M& mod)
 {
     mod.def(
         "Epseq",
@@ -60,7 +58,7 @@ void Epseq(M& mod)
 }
 
 template <class R, class T, class M>
-void epseq(M& mod)
+void init_epseq(M& mod)
 {
     mod.def(
         "epseq",
@@ -71,7 +69,7 @@ void epseq(M& mod)
 }
 
 template <class R, class T, class M>
-void Sigeq(M& mod)
+void init_Sigeq(M& mod)
 {
     mod.def(
         "Sigeq",
@@ -81,7 +79,7 @@ void Sigeq(M& mod)
 }
 
 template <class R, class T, class M>
-void sigeq(M& mod)
+void init_sigeq(M& mod)
 {
     mod.def(
         "sigeq",
@@ -90,8 +88,6 @@ void sigeq(M& mod)
         py::arg("A"),
         py::arg("ret"));
 }
-
-} // namespace my3d
 
 /**
 Overrides the `__name__` of a module.
@@ -134,37 +130,39 @@ PYBIND11_MODULE(_GMatElastic, m)
     // GMatElastic.Cartesian3d
     // -----------------------
 
-    py::module sm = m.def_submodule("Cartesian3d", "3d Cartesian coordinates");
+    {
+        py::module sm = m.def_submodule("Cartesian3d", "3d Cartesian coordinates");
 
-    namespace SM = GMatElastic::Cartesian3d;
+        namespace SM = GMatElastic::Cartesian3d;
 
-    // Tensor algebra
+        // Tensor algebra
 
-    my3d::Epseq<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
-    my3d::Epseq<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
-    my3d::Epseq<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
+        init_Epseq<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
+        init_Epseq<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
+        init_Epseq<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
 
-    my3d::epseq<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
-    my3d::epseq<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
-    my3d::epseq<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
+        init_epseq<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
+        init_epseq<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
+        init_epseq<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
 
-    my3d::Sigeq<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
-    my3d::Sigeq<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
-    my3d::Sigeq<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
+        init_Sigeq<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
+        init_Sigeq<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
+        init_Sigeq<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
 
-    my3d::sigeq<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
-    my3d::sigeq<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
-    my3d::sigeq<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
+        init_sigeq<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
+        init_sigeq<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
+        init_sigeq<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
 
-    // Elastic
+        // Elastic
 
-    py::class_<SM::Elastic<0>, GMatTensor::Cartesian3d::Array<0>> array0d(sm, "Elastic0d");
-    py::class_<SM::Elastic<1>, GMatTensor::Cartesian3d::Array<1>> array1d(sm, "Elastic1d");
-    py::class_<SM::Elastic<2>, GMatTensor::Cartesian3d::Array<2>> array2d(sm, "Elastic2d");
-    py::class_<SM::Elastic<3>, GMatTensor::Cartesian3d::Array<3>> array3d(sm, "Elastic3d");
+        py::class_<SM::Elastic<0>, GMatTensor::Cartesian3d::Array<0>> array0d(sm, "Elastic0d");
+        py::class_<SM::Elastic<1>, GMatTensor::Cartesian3d::Array<1>> array1d(sm, "Elastic1d");
+        py::class_<SM::Elastic<2>, GMatTensor::Cartesian3d::Array<2>> array2d(sm, "Elastic2d");
+        py::class_<SM::Elastic<3>, GMatTensor::Cartesian3d::Array<3>> array3d(sm, "Elastic3d");
 
-    my3d::Elastic<SM::Elastic<0>>(array0d);
-    my3d::Elastic<SM::Elastic<1>>(array1d);
-    my3d::Elastic<SM::Elastic<2>>(array2d);
-    my3d::Elastic<SM::Elastic<3>>(array3d);
+        init_Elastic<SM::Elastic<0>>(array0d);
+        init_Elastic<SM::Elastic<1>>(array1d);
+        init_Elastic<SM::Elastic<2>>(array2d);
+        init_Elastic<SM::Elastic<3>>(array3d);
+    }
 }
