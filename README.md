@@ -1,4 +1,4 @@
-# GMatLinearElastic
+# GMatElastic
 
 [![CI](https://github.com/tdegeus/GMatElastic/workflows/CI/badge.svg)](https://github.com/tdegeus/GMatElastic/actions)
 [![Doxygen -> gh-pages](https://github.com/tdegeus/GMatElastic/workflows/gh-pages/badge.svg)](https://tdegeus.github.io/GMatElastic)
@@ -270,7 +270,7 @@ This requires the following changes:
 
 *   Strain is now stored as a member.
     Functions like `stress` now return the state based on the last specified strain,
-    specified using `set_Eps(Esp)`. This leads to the following changes:
+    specified using `setStrain(Esp)`. This leads to the following changes:
     - `stress`: no argument.
     - `tangent`: no argument, single return value (no longer returns stress).
 
