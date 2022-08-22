@@ -186,6 +186,21 @@ public:
     }
 
     /**
+    Set strain tensors.
+    Internally, this calls refresh() to update stress.
+    \tparam T e.g. `array_type::tensor<double, N + 2>`
+    \param arg Strain tensor per item [shape(), 3, 3].
+    \param compute_tangent Update tangent (if needed).
+    */
+    template <class T>
+    void set_Eps(const T& arg, bool compute_tangent)
+    {
+        GMATELASTIC_ASSERT(xt::has_shape(arg, m_shape_tensor2));
+        std::copy(arg.cbegin(), arg.cend(), m_Eps.begin());
+        this->refresh(compute_tangent);
+    }
+
+    /**
     Recompute stress from strain.
 
     From C++, this function need **never** be called: the API takes care of this.
@@ -203,9 +218,13 @@ public:
         # no further action needed, "mat" was refreshed
 
     Note though that you can call this function as often as you like, you will only loose time.
+
+    \param compute_tangent Update tangent (if needed).
     */
-    virtual void refresh()
+    virtual void refresh(bool compute_tangent = true)
     {
+        (void)(compute_tangent);
+
 #pragma omp parallel for
         for (size_t i = 0; i < m_size; ++i) {
 
