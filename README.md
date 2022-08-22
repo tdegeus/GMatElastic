@@ -284,6 +284,11 @@ This requires the following changes:
 
 # Change-log
 
+## v0.5.0
+
+*   Making functions virtual for override
+*   Minor code style updates
+
 ## v0.4.0
 
 Complete API overhaul.
