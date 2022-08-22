@@ -75,7 +75,6 @@ To enable them you have to compile on your system, as is discussed next.
 >   Otherwise, a bit of manual labour might be needed to treat the dependencies.
 
 ```bash
-# Download GMatElastic
 git checkout https://github.com/tdegeus/GMatElastic.git
 cd GMatElastic
 
@@ -118,18 +117,6 @@ int main()
 }
 ```
 
-## Debugging
-
-To enable assertions define `GMATELASTIC_ENABLE_ASSERT`
-**before** including *GMatElastic* for the first time.
-
-Using *CMake* this can be done using the `GMatElastic::assert` target.
-
->   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT`
->   **before** including *xtensor* (and *GMatElastic*) for the first time.
->
->   Using *CMake* all assertions are enabled using the `GMatElastic::debug` target.
-
 ## Installation
 
 ### Using conda
@@ -170,14 +157,13 @@ target_link_libraries(example PRIVATE GMatElastic)
 The following targets are available:
 
 *   `GMatElastic`
-    Includes *GMatElastic* and the *GMatTensor* and *xtensor* dependencies.
+    Includes the library and its dependencies.
 
 *   `GMatElastic::assert`
-    Enables assertions by defining `GMATELASTIC_ENABLE_ASSERT`.
+    Enables IO-assertions by defining `GMATELASTIC_ENABLE_ASSERT`.
 
 *   `GMatElastic::debug`
-    Enables all assertions by defining
-    `GMATELASTIC_ENABLE_ASSERT` and `XTENSOR_ENABLE_ASSERT`.
+    Enables assertions of all dependencies.
 
 *   `GMatElastic::compiler_warings`
     Enables compiler warnings (generic).
@@ -192,6 +178,8 @@ The above example then becomes:
 cmake_minimum_required(VERSION 3.1)
 project(example)
 find_package(GMatElastic REQUIRED)
+find_package(xtensor REQUIRED)
+find_package(xsimd REQUIRED)
 add_executable(example example.cpp)
 target_link_libraries(example PRIVATE
     GMatElastic
@@ -199,7 +187,7 @@ target_link_libraries(example PRIVATE
     xtensor::use_xsimd)
 ```
 
-See the [documentation of xtensor](https://xtensor.readthedocs.io/en/latest/) concerning optimisation.
+See the [documentation of xtensor](https://xtensor.readthedocs.io/en/latest/).
 
 ## By hand
 
