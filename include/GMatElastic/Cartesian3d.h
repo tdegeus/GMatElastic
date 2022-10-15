@@ -36,7 +36,10 @@ inline auto Epseq(const T& A) -> typename GMatTensor::allocate<xt::get_rank<T>::
     GMATELASTIC_ASSERT(A.shape(A.dimension() - 1) == 3);
     GMATELASTIC_ASSERT(A.shape(A.dimension() - 2) == 3);
 
-    return xt::eval(std::sqrt(2.0 / 3.0) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
+    using return_type = typename GMatTensor::allocate<xt::get_rank<T>::value - 2, T>::type;
+    return_type ret = GMatTensor::Cartesian3d::Norm_deviatoric(A);
+    ret *= std::sqrt(2.0 / 3.0);
+    return ret;
 }
 
 /**
@@ -74,7 +77,10 @@ inline auto Sigeq(const T& A) -> typename GMatTensor::allocate<xt::get_rank<T>::
     GMATELASTIC_ASSERT(A.shape(A.dimension() - 1) == 3);
     GMATELASTIC_ASSERT(A.shape(A.dimension() - 2) == 3);
 
-    return xt::eval(std::sqrt(1.5) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
+    using return_type = typename GMatTensor::allocate<xt::get_rank<T>::value - 2, T>::type;
+    return_type ret = GMatTensor::Cartesian3d::Norm_deviatoric(A);
+    ret *= std::sqrt(1.5);
+    return ret;
 }
 
 /**
