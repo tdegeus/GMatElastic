@@ -41,7 +41,6 @@ jobs:
         environment-file: environment.yaml
         environment-name: myenv
         extra-specs: |
-          sel(linux): cxx-compiler
           sel(win): clang_win-64
 
     - name: Set dummy version
@@ -56,6 +55,14 @@ jobs:
       run: make html
 
     - name: Build and install Python module
+      if: runner.os == 'Linux'
+      env:
+        CC: gcc-11
+        CXX: g++-11
+      run: python -m pip install . -v
+
+    - name: Build and install Python module
+      if: runner.os != 'Linux'
       run: python -m pip install . -v
 
     - name: Run Python tests
@@ -70,7 +77,7 @@ jobs:
       if: runner.os == 'Linux'
       working-directory: tests/compare_versions
       run: |
-        micromamba install -c conda-forge python-gmatelastic=0.2.2
+        micromamba install -c conda-forge python=3.10.8 python-gmatelastic=0.2.2
         python Cartesian3d_check_v0.2.2.py
 
     - name: Check consistency with v0.1.0
